@@ -1,12 +1,19 @@
-import { createVuetify } from 'vuetify'
-import 'vuetify/styles'
-import '@/styles/main.scss'
-import { aliases, mdi } from 'vuetify/iconsets/mdi'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import { mdiChevronDown, mdiCloseCircle, mdiEye, mdiEyeOff } from '@mdi/js'
+import { createVuetify } from 'vuetify';
+import 'vuetify/styles';
+import '@/styles/main.scss';
+import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import * as components from 'vuetify/components';
+import * as directives from 'vuetify/directives';
+import {
+  mdiChevronDown,
+  mdiCloseCircle,
+  mdiEye,
+  mdiEyeOff,
+  mdiCalendarMonthOutline
+} from '@mdi/js';
 
-import { VDateInput } from 'vuetify/labs/VDateInput'
+import { VDateInput } from 'vuetify/labs/VDateInput';
+import { VTimePicker } from 'vuetify/labs/VTimePicker';
 
 const myCustomLightTheme = {
   dark: false,
@@ -30,7 +37,6 @@ const myCustomLightTheme = {
     greyDarken2: '#515151',
     greyDarken3: '#878787',
     greyDarken4: '#8A8A8A',
-    dark: '#333333',
     stageLight1: '#D9D9D9',
     stageLight2: '#FFEE8D',
     stageDark2: '#B69A00',
@@ -54,13 +60,14 @@ const myCustomLightTheme = {
     reddit: '#FF4301',
     uploadErrorText: '#F37261',
     green: '#17B978',
-    greenLight1: '#99d98c',
-  },
-}
+    greenLight1: '#99d98c'
+  }
+};
 
 const vuetify = createVuetify({
   components: {
     VDateInput,
+    VTimePicker
   },
   directives,
 
@@ -72,10 +79,11 @@ const vuetify = createVuetify({
       closeCircle: mdiCloseCircle,
       eyeOpen: mdiEye,
       eyeClose: mdiEyeOff,
+      calendarMonthOutline: mdiCalendarMonthOutline
     },
     sets: {
-      mdi,
-    },
+      mdi
+    }
   },
   theme: {
     defaultTheme: 'myCustomLightTheme',
@@ -83,36 +91,36 @@ const vuetify = createVuetify({
       myCustomLightTheme: {
         ...myCustomLightTheme,
         variables: {
-          fontFamily: '"Roboto", sans-serif',
-        },
-      },
-    },
+          fontFamily: '"Roboto", sans-serif'
+        }
+      }
+    }
   },
   defaults: {
     VBtn: {
       variant: 'flat',
       rounded: 'lg',
-      class: 'text-capitalize',
+      class: 'text-capitalize'
     },
     VSelect: {
       variant: 'outlined',
       rounded: 'lg',
       density: 'compact',
-      singleLine: true,
+      singleLine: true
     },
     VAutocomplete: {
       variant: 'outlined',
       density: 'compact',
       rounded: 'lg',
-      hideDetails: 'auto',
+      hideDetails: 'auto'
     },
     VTextField: {
       variant: 'outlined',
       density: 'compact',
       rounded: 'lg',
-      hideDetails: 'auto',
-    },
-  },
-})
+      hideDetails: 'auto'
+    }
+  }
+});
 
-export default vuetify
+export default vuetify;
