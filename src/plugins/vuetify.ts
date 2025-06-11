@@ -1,7 +1,7 @@
 import { createVuetify } from 'vuetify';
 import 'vuetify/styles';
 import '@/styles/main.scss';
-import { aliases, mdi } from 'vuetify/iconsets/mdi';
+import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import {
