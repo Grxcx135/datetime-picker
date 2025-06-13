@@ -83,8 +83,12 @@ function convertToDate() {
     Number(dateTimeInput.date.year),
     Number(dateTimeInput.date.month) - 1,
     Number(dateTimeInput.date.day),
-    !isNaN(Number(dateTimeInput.time.hour)) ? Number(dateTimeInput.time.hour) : 0,
-    !isNaN(Number(dateTimeInput.time.minute)) ? Number(dateTimeInput.time.minute) : 0
+    !isNaN(Number(dateTimeInput.time.hour))
+      ? Number(dateTimeInput.time.hour)
+      : 0,
+    !isNaN(Number(dateTimeInput.time.minute))
+      ? Number(dateTimeInput.time.minute)
+      : 0
   );
   dateFormatted.value = formatDateWithSlash(dateStringConvertToDate);
   dateFormattedWithTime.value = formatDateWithTime(dateStringConvertToDate);
@@ -109,7 +113,10 @@ function setDate(event: InputEvent, dateUnit: keyof typeof dateTimeInput.date) {
   }
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
-      dateTimeInput.date[dateUnit] = event.target._value.slice(0, event.target._value.length - 1);
+      dateTimeInput.date[dateUnit] = event.target._value.slice(
+        0,
+        event.target._value.length - 1
+      );
     } else {
       if (checkMoreThanMaximumDate()) {
         dateTimeInput.date[dateUnit] = dateTimeInput.date[dateUnit].slice(
@@ -140,14 +147,18 @@ function setTime(event: InputEvent, timeUnit: keyof typeof dateTimeInput.time) {
   }
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
-      dateTimeInput.time[timeUnit] = event.target._value.slice(0, event.target._value.length - 1);
+      dateTimeInput.time[timeUnit] = event.target._value.slice(
+        0,
+        event.target._value.length - 1
+      );
     } else {
       if (checkMoreThanMaximumTime()) {
         dateTimeInput.time[timeUnit] = dateTimeInput.time[timeUnit].slice(0, 2);
       } else if (checkLessThanTenOfTime(timeUnit)) {
         dateTimeInput.time[timeUnit] = '0' + event.data;
       } else {
-        dateTimeInput.time[timeUnit] = dateTimeInput.time[timeUnit][1] + event.data;
+        dateTimeInput.time[timeUnit] =
+          dateTimeInput.time[timeUnit][1] + event.data;
       }
     }
   } else {
@@ -165,16 +176,29 @@ function checkMoreThanMaximumDate(): boolean {
   );
 }
 
-function checkLessThanTenOfDate(dateUnit: keyof typeof dateTimeInput.date): boolean {
-  return Number(dateTimeInput.date[dateUnit]) < 10 || isNaN(Number(dateTimeInput.date[dateUnit]));
+function checkLessThanTenOfDate(
+  dateUnit: keyof typeof dateTimeInput.date
+): boolean {
+  return (
+    Number(dateTimeInput.date[dateUnit]) < 10 ||
+    isNaN(Number(dateTimeInput.date[dateUnit]))
+  );
 }
 
 function checkMoreThanMaximumTime(): boolean {
-  return Number(dateTimeInput.time.hour) > 24 || Number(dateTimeInput.time.minute) > 60;
+  return (
+    Number(dateTimeInput.time.hour) > 24 ||
+    Number(dateTimeInput.time.minute) > 60
+  );
 }
 
-function checkLessThanTenOfTime(timeUnit: keyof typeof dateTimeInput.time): boolean {
-  return Number(dateTimeInput.time[timeUnit]) < 10 || isNaN(Number(dateTimeInput.time[timeUnit]));
+function checkLessThanTenOfTime(
+  timeUnit: keyof typeof dateTimeInput.time
+): boolean {
+  return (
+    Number(dateTimeInput.time[timeUnit]) < 10 ||
+    isNaN(Number(dateTimeInput.time[timeUnit]))
+  );
 }
 </script>
 
