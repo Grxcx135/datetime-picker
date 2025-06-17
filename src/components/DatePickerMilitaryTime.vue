@@ -8,7 +8,7 @@
       class="pa-2 pb-0"
     >
       <v-row class="">
-        <v-col cols="8" class="pa-2 d-flex flex-row pt-0 pr-0">
+        <v-col cols="7" class="pa-2 d-flex flex-row pt-0 pr-0">
           <v-col cols="3" class="pa-0"
             ><v-text-field
               v-model="dateTimeInput.date.day"
@@ -38,7 +38,7 @@
             ></v-text-field
           ></v-col>
         </v-col>
-        <v-col class="pa-0 d-flex flex-row">
+        <v-col cols="4" class="pl-2 pa-0 d-flex flex-row">
           <v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
@@ -65,9 +65,17 @@
 <script setup lang="ts">
 import { ref, watch, computed, reactive } from 'vue';
 import dayjs from 'dayjs';
+import isLeapYear from 'dayjs/plugin/isLeapYear';
 import { isNaN } from 'lodash';
-import { formatDateWithSlash, formatDateWithTime } from '@/utils/formatDate';
+import {
+  formatDateWithSlash,
+  formatDateWithTime,
+  formatDateDash
+} from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
+
+dayjs.extend(isLeapYear);
+const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
 const dateFormattedWithTime = ref<string | undefined>();
 
@@ -90,22 +98,11 @@ function convertToDate() {
       ? Number(dateTimeInput.time.minute)
       : 0
   );
+  dateTypeDate.value = dateStringConvertToDate;
   dateFormatted.value = formatDateWithSlash(dateStringConvertToDate);
   dateFormattedWithTime.value = formatDateWithTime(dateStringConvertToDate);
   return dateFormatted.value;
 }
-
-// const days = dateStringConvertToDate.getDate();
-// if (checkCorrectDays(days)) {
-//   dateTimeInput.date.day = '';
-// }
-
-// function checkCorrectDays(daysCount: number) {
-//   console.log('check', daysCount);
-//   if (!isNaN(dayjs(dateFormatted.value).daysInMonth())) {
-//     return Number(dateTimeInput.date.day) > daysCount;
-//   }
-// }
 
 function setDate(event: InputEvent, dateUnit: keyof typeof dateTimeInput.date) {
   if (!event.target) {
@@ -118,11 +115,17 @@ function setDate(event: InputEvent, dateUnit: keyof typeof dateTimeInput.date) {
         event.target._value.length - 1
       );
     } else {
-      if (checkMoreThanMaximumDate()) {
+      if (checkMoreThanMaximumMonthAndYear()) {
         dateTimeInput.date[dateUnit] = dateTimeInput.date[dateUnit].slice(
           0,
           dateTimeInput.date[dateUnit].length - 1
         );
+      } else if (isMoreThanMaximumDays()) {
+        dateTimeInput.date.day = 'DD';
+        dateTimeInput.date.month =
+          Number(dateTimeInput.date.month) < 10
+            ? '0' + Number(dateTimeInput.date.month)
+            : dateTimeInput.date.month;
       } else if (checkLessThanTenOfDate(dateUnit)) {
         dateTimeInput.date[dateUnit] = dateTimeInput.isDateUnitYear(dateUnit)
           ? '000' + event.data
@@ -168,12 +171,21 @@ function setTime(event: InputEvent, timeUnit: keyof typeof dateTimeInput.time) {
   }
 }
 
-function checkMoreThanMaximumDate(): boolean {
+function checkMoreThanMaximumMonthAndYear(): boolean {
   return (
-    Number(dateTimeInput.date.day) > 31 ||
     Number(dateTimeInput.date.month) > 12 ||
     String(Number(dateTimeInput.date.year)).length > 4
   );
+}
+
+function isMoreThanMaximumDays(): boolean {
+  let maximumDate = 31;
+  if ([4, 6, 9, 11].includes(Number(dateTimeInput.date.month))) {
+    maximumDate = 30;
+  } else if (Number(dateTimeInput.date.month) === 2) {
+    maximumDate = dayjs(dateTypeDate.value).isLeapYear() ? 29 : 28;
+  }
+  return Number(dateTimeInput.date.day) > maximumDate;
 }
 
 function checkLessThanTenOfDate(

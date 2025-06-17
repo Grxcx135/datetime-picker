@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container :fluid="true" class="pa-0"> <router-view /> </v-container>
+    <v-container :fluid="true"> <router-view /> </v-container>
   </v-app>
 </template>
 s
