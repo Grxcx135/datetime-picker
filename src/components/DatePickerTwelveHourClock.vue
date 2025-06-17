@@ -4,7 +4,7 @@
       elevation="0"
       variant="outlined"
       style="display: flex; align-items: center"
-      width="200px"
+      width="230px"
       class="pa-2 pb-0"
     >
       <v-row class="">
@@ -38,22 +38,35 @@
             ></v-text-field
           ></v-col>
         </v-col>
-        <v-col cols="4" class="pl-2 pa-0 d-flex flex-row">
-          <v-text-field
-            v-model="dateTimeInput.time.hour"
-            label=""
-            variant="plain"
-            hide-details
-            @input="setTime($event, 'hour')"
-          ></v-text-field>
+        <v-col cols="" class="pa-0 d-flex flex-row">
+          <v-col cols="3" class="pa-0"
+            ><v-text-field
+              v-model="dateTimeInput.time.hour"
+              label=""
+              variant="plain"
+              hide-details
+              @input="setTime($event, 'hour')"
+            ></v-text-field
+          ></v-col>
           <span class="size-text">:</span>
-          <v-text-field
-            v-model="dateTimeInput.time.minute"
-            label=""
-            variant="plain"
-            hide-details
-            @input="setTime($event, 'minute')"
-          ></v-text-field>
+          <v-col cols="4" class="pa-0"
+            ><v-text-field
+              v-model="dateTimeInput.time.minute"
+              label=""
+              variant="plain"
+              hide-details
+              @input="setTime($event, 'minute')"
+            ></v-text-field
+          ></v-col>
+          <v-col cols="4" class="pa-0"
+            ><v-text-field
+              v-model="dateTimeInput.time.meridiemType"
+              label=""
+              variant="plain"
+              hide-details
+              @input="setMeridiemType($event)"
+            ></v-text-field
+          ></v-col>
         </v-col>
       </v-row>
     </v-card>
@@ -78,7 +91,7 @@ const dateFormattedWithTime = ref<string | undefined>();
 const dateTimeInput = reactive(
   new dateTime({
     date: { day: 'DD', month: 'MM', year: 'YYYY' },
-    time: { hour: 'HH', minute: 'mm' }
+    time: { hour: 'HH', minute: 'mm', meridiemType: 'aa' }
   })
 );
 
@@ -87,9 +100,7 @@ function convertToDate() {
     Number(dateTimeInput.date.year),
     Number(dateTimeInput.date.month) - 1,
     Number(dateTimeInput.date.day),
-    !isNaN(Number(dateTimeInput.time.hour))
-      ? Number(dateTimeInput.time.hour)
-      : 0,
+    !isNaN(Number(dateTimeInput.time.hour)) ? calculateHour() : 0,
     !isNaN(Number(dateTimeInput.time.minute))
       ? Number(dateTimeInput.time.minute)
       : 0
@@ -98,6 +109,12 @@ function convertToDate() {
   dateFormatted.value = formatDateWithSlash(dateStringConvertToDate);
   dateFormattedWithTime.value = formatDateWithTime(dateStringConvertToDate);
   return dateFormatted.value;
+}
+
+function calculateHour(): number {
+  return dateTimeInput.time.meridiemType === 'PM'
+    ? Number(dateTimeInput.time.hour) + 12
+    : Number(dateTimeInput.time.hour);
 }
 
 function setDate(event: InputEvent, dateUnit: keyof typeof dateTimeInput.date) {
@@ -152,18 +169,41 @@ function setTime(event: InputEvent, timeUnit: keyof typeof dateTimeInput.time) {
       );
     } else {
       if (checkMoreThanMaximumTime()) {
-        dateTimeInput.time[timeUnit] = dateTimeInput.time[timeUnit].slice(0, 2);
+        if (dateTimeInput.time[timeUnit]) {
+          dateTimeInput.time[timeUnit] = dateTimeInput.time[timeUnit].slice(
+            0,
+            2
+          );
+        }
       } else if (checkLessThanTenOfTime(timeUnit)) {
         dateTimeInput.time[timeUnit] = '0' + event.data;
       } else {
-        dateTimeInput.time[timeUnit] =
-          dateTimeInput.time[timeUnit][1] + event.data;
+        if (dateTimeInput.time[timeUnit]) {
+          dateTimeInput.time[timeUnit] =
+            dateTimeInput.time[timeUnit][1] + event.data;
+        }
       }
     }
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.time[timeUnit] = timeUnit === 'hour' ? 'HH' : 'mm';
     }
+  }
+}
+
+function setMeridiemType(event: InputEvent) {
+  if (event.inputType === 'insertText') {
+    dateTimeInput.time.meridiemType =
+      (event.data ?? '').toLowerCase() === 'p'
+        ? 'PM'
+        : (event.data ?? '').toLowerCase() === 'a'
+          ? 'AM'
+          : 'aa';
+  } else {
+    dateTimeInput.time.meridiemType = 'aa';
+  }
+  if (checkMoreThanMaximumTime()) {
+    dateTimeInput.time.hour = 'HH';
   }
 }
 
@@ -194,10 +234,11 @@ function checkLessThanTenOfDate(
 }
 
 function checkMoreThanMaximumTime(): boolean {
-  return (
-    Number(dateTimeInput.time.hour) > 24 ||
-    Number(dateTimeInput.time.minute) > 60
-  );
+  console.log(dateTimeInput.time.meridiemType, Number(dateTimeInput.time.hour));
+  return dateTimeInput.time.meridiemType === 'PM'
+    ? Number(dateTimeInput.time.hour) > 11
+    : Number(dateTimeInput.time.hour) > 12 ||
+        Number(dateTimeInput.time.minute) > 60;
 }
 
 function checkLessThanTenOfTime(

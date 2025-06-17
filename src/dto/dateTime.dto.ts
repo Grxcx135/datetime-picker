@@ -9,11 +9,12 @@ interface DateType {
 interface TimeType {
   hour: string;
   minute: string;
+  meridiemType?: string;
 }
 
 class dateTime {
   date: DateType = { day: '', month: '', year: '' };
-  time: TimeType = { hour: '', minute: '' };
+  time: TimeType = { hour: '', minute: '', meridiemType: '' };
 
   constructor(dateTime?: { date: DateType; time: TimeType }) {
     if (dateTime) {

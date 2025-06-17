@@ -1,6 +1,15 @@
 <template>
   <main>
-    <DateTimePicker timeType="militaryTime" />
+    <v-row>
+      <v-col>
+        <DateTimePicker timeType="militaryTime" />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <DateTimePicker timeType="twelveHour" />
+      </v-col>
+    </v-row>
   </main>
 </template>
 
