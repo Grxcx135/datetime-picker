@@ -8,7 +8,10 @@
       class="pa-2 pb-0"
     >
       <v-row class="">
-        <v-col cols="7" class="pa-2 d-flex flex-row pt-0 pr-0">
+        <v-col
+          cols="7"
+          class="pa-2 d-flex flex-row pt-0 pr-0"
+        >
           <v-col cols="3" class="pa-0"
             ><v-text-field
               v-model="dateTimeInput.date.day"
@@ -63,14 +66,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, reactive } from 'vue';
-import dayjs from 'dayjs';
-import isLeapYear from 'dayjs/plugin/isLeapYear';
+import { ref, reactive } from 'vue';
 import { isNaN } from 'lodash';
-import { formatDateWithSlash, formatDateWithTime } from '@/utils/formatDate';
+import {
+  formatDateWithSlash,
+  formatDateWithTime
+} from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
+import {
+  checkMoreThanMaximumMonthAndYear,
+  isMoreThanMaximumDays,
+  checkLessThanTen
+} from '@/utils/dateFunction';
+import { checkMoreThanMaximumTime } from '@/utils/timeFunction';
 
-dayjs.extend(isLeapYear);
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
 const dateFormattedWithTime = ref<string | undefined>();
@@ -95,118 +104,121 @@ function convertToDate() {
       : 0
   );
   dateTypeDate.value = dateStringConvertToDate;
-  dateFormatted.value = formatDateWithSlash(dateStringConvertToDate);
-  dateFormattedWithTime.value = formatDateWithTime(dateStringConvertToDate);
+  dateFormatted.value = formatDateWithSlash(
+    dateStringConvertToDate
+  );
+  dateFormattedWithTime.value = formatDateWithTime(
+    dateStringConvertToDate
+  );
   return dateFormatted.value;
 }
 
-function setDate(event: InputEvent, dateUnit: keyof typeof dateTimeInput.date) {
+function setDate(
+  event: InputEvent,
+  dateUnit: keyof typeof dateTimeInput.date
+) {
   if (!event.target) {
     return;
   }
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
-      dateTimeInput.date[dateUnit] = event.target._value.slice(
-        0,
-        event.target._value.length - 1
-      );
-    } else {
-      if (checkMoreThanMaximumMonthAndYear()) {
-        dateTimeInput.date[dateUnit] = dateTimeInput.date[dateUnit].slice(
+      dateTimeInput.date[dateUnit] =
+        event.target._value.slice(
           0,
-          dateTimeInput.date[dateUnit].length - 1
+          event.target._value.length - 1
         );
-      } else if (isMoreThanMaximumDays()) {
+    } else {
+      if (
+        checkMoreThanMaximumMonthAndYear(
+          dateTimeInput.date.month,
+          dateTimeInput.date.year
+        )
+      ) {
+        dateTimeInput.date[dateUnit] = dateTimeInput.date[
+          dateUnit
+        ].slice(0, dateTimeInput.date[dateUnit].length - 1);
+      } else if (
+        isMoreThanMaximumDays(
+          dateTimeInput.date.day,
+          dateTimeInput.date.month,
+          dateTypeDate.value
+        )
+      ) {
         dateTimeInput.date.day = 'DD';
         dateTimeInput.date.month =
           Number(dateTimeInput.date.month) < 10
             ? '0' + Number(dateTimeInput.date.month)
             : dateTimeInput.date.month;
-      } else if (checkLessThanTenOfDate(dateUnit)) {
-        dateTimeInput.date[dateUnit] = dateTimeInput.isDateUnitYear(dateUnit)
-          ? '000' + event.data
-          : '0' + event.data;
+      } else if (
+        checkLessThanTen(dateTimeInput.date[dateUnit])
+      ) {
+        dateTimeInput.date[dateUnit] =
+          dateTimeInput.isDateUnitYear(dateUnit)
+            ? '000' + event.data
+            : '0' + event.data;
       } else {
-        dateTimeInput.date[dateUnit] = dateTimeInput.isDateUnitYear(dateUnit)
-          ? dateTimeInput.date.year.slice(1, 4) + event.data
-          : dateTimeInput.date[dateUnit][1] + event.data;
+        dateTimeInput.date[dateUnit] =
+          dateTimeInput.isDateUnitYear(dateUnit)
+            ? dateTimeInput.date.year.slice(1, 4) +
+              event.data
+            : dateTimeInput.date[dateUnit][1] + event.data;
       }
     }
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.date[dateUnit] =
-        dateUnit === 'day' ? 'DD' : dateUnit === 'month' ? 'MM' : 'YYYY';
+        dateUnit === 'day'
+          ? 'DD'
+          : dateUnit === 'month'
+            ? 'MM'
+            : 'YYYY';
     }
   }
 }
 
-function setTime(event: InputEvent, timeUnit: keyof typeof dateTimeInput.time) {
+function setTime(
+  event: InputEvent,
+  timeUnit: keyof typeof dateTimeInput.time
+) {
   if (!event.target) {
     return;
   }
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
-      dateTimeInput.time[timeUnit] = event.target._value.slice(
-        0,
-        event.target._value.length - 1
-      );
+      dateTimeInput.time[timeUnit] =
+        event.target._value.slice(
+          0,
+          event.target._value.length - 1
+        );
     } else {
-      if (checkMoreThanMaximumTime()) {
-        dateTimeInput.time[timeUnit] = dateTimeInput.time[timeUnit].slice(0, 2);
-      } else if (checkLessThanTenOfTime(timeUnit)) {
+      if (
+        checkMoreThanMaximumTime(
+          dateTimeInput.time.hour,
+          dateTimeInput.time.minute
+        )
+      ) {
+        if (dateTimeInput.time[timeUnit]) {
+          dateTimeInput.time[timeUnit] = dateTimeInput.time[
+            timeUnit
+          ].slice(0, 2);
+        }
+      } else if (
+        checkLessThanTen(dateTimeInput.time[timeUnit])
+      ) {
         dateTimeInput.time[timeUnit] = '0' + event.data;
       } else {
-        dateTimeInput.time[timeUnit] =
-          dateTimeInput.time[timeUnit][1] + event.data;
+        if (dateTimeInput.time[timeUnit]) {
+          dateTimeInput.time[timeUnit] =
+            dateTimeInput.time[timeUnit][1] + event.data;
+        }
       }
     }
   } else {
     if (!isNaN(Number(event.data))) {
-      dateTimeInput.time[timeUnit] = timeUnit === 'hour' ? 'HH' : 'mm';
+      dateTimeInput.time[timeUnit] =
+        timeUnit === 'hour' ? 'HH' : 'mm';
     }
   }
-}
-
-function checkMoreThanMaximumMonthAndYear(): boolean {
-  return (
-    Number(dateTimeInput.date.month) > 12 ||
-    String(Number(dateTimeInput.date.year)).length > 4
-  );
-}
-
-function isMoreThanMaximumDays(): boolean {
-  let maximumDate = 31;
-  if ([4, 6, 9, 11].includes(Number(dateTimeInput.date.month))) {
-    maximumDate = 30;
-  } else if (Number(dateTimeInput.date.month) === 2) {
-    maximumDate = dayjs(dateTypeDate.value).isLeapYear() ? 29 : 28;
-  }
-  return Number(dateTimeInput.date.day) > maximumDate;
-}
-
-function checkLessThanTenOfDate(
-  dateUnit: keyof typeof dateTimeInput.date
-): boolean {
-  return (
-    Number(dateTimeInput.date[dateUnit]) < 10 ||
-    isNaN(Number(dateTimeInput.date[dateUnit]))
-  );
-}
-
-function checkMoreThanMaximumTime(): boolean {
-  return (
-    Number(dateTimeInput.time.hour) > 24 ||
-    Number(dateTimeInput.time.minute) > 60
-  );
-}
-
-function checkLessThanTenOfTime(
-  timeUnit: keyof typeof dateTimeInput.time
-): boolean {
-  return (
-    Number(dateTimeInput.time[timeUnit]) < 10 ||
-    isNaN(Number(dateTimeInput.time[timeUnit]))
-  );
 }
 </script>
 
