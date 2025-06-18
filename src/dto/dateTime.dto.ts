@@ -14,9 +14,16 @@ interface TimeType {
 
 class dateTime {
   date: DateType = { day: '', month: '', year: '' };
-  time: TimeType = { hour: '', minute: '', meridiemType: '' };
+  time: TimeType = {
+    hour: '',
+    minute: '',
+    meridiemType: ''
+  };
 
-  constructor(dateTime?: { date: DateType; time: TimeType }) {
+  constructor(dateTime?: {
+    date: DateType;
+    time: TimeType;
+  }) {
     if (dateTime) {
       this.date = dateTime.date;
       this.time = dateTime.time;

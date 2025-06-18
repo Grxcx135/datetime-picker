@@ -3,8 +3,8 @@
     <v-card
       elevation="0"
       :variant="props.variantType"
-      style="display: flex; align-items: center"
       :width="props.width"
+      style="display: flex; align-items: center"
       class="pa-2 pb-0"
     >
       <v-row class="">
@@ -41,44 +41,22 @@
             ></v-text-field
           ></v-col>
         </v-col>
-        <v-col cols="4" class="pl-2 pa-0 d-flex flex-row">
-          <v-text-field
-            v-model="dateTimeInput.time.hour"
-            label=""
-            variant="plain"
-            hide-details
-            @input="setTime($event, 'hour')"
-          ></v-text-field>
-          <span class="size-text">:</span>
-          <v-text-field
-            v-model="dateTimeInput.time.minute"
-            label=""
-            variant="plain"
-            hide-details
-            @input="setTime($event, 'minute')"
-          ></v-text-field>
-        </v-col>
       </v-row>
     </v-card>
     <p>Date is {{ convertToDate() }}</p>
-    <p>Date Time is {{ dateFormattedWithTime }}</p>
   </v-container>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { isNaN } from 'lodash';
-import {
-  formatDateWithSlash,
-  formatDateWithTime
-} from '@/utils/formatDate';
+import { formatDateWithSlash } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
 import {
   checkMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
   checkLessThanTen
 } from '@/utils/dateFunction';
-import { checkMoreThanMaximumTime } from '@/utils/timeFunction';
 
 const props = withDefaults(
   defineProps<{
@@ -98,7 +76,6 @@ const props = withDefaults(
 );
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
-const dateFormattedWithTime = ref<string | undefined>();
 
 const dateTimeInput = reactive(
   new dateTime({
@@ -111,19 +88,10 @@ function convertToDate() {
   const dateStringConvertToDate = new Date(
     Number(dateTimeInput.date.year),
     Number(dateTimeInput.date.month) - 1,
-    Number(dateTimeInput.date.day),
-    !isNaN(Number(dateTimeInput.time.hour))
-      ? Number(dateTimeInput.time.hour)
-      : 0,
-    !isNaN(Number(dateTimeInput.time.minute))
-      ? Number(dateTimeInput.time.minute)
-      : 0
+    Number(dateTimeInput.date.day)
   );
   dateTypeDate.value = dateStringConvertToDate;
   dateFormatted.value = formatDateWithSlash(
-    dateStringConvertToDate
-  );
-  dateFormattedWithTime.value = formatDateWithTime(
     dateStringConvertToDate
   );
   return dateFormatted.value;
@@ -188,51 +156,6 @@ function setDate(
           : dateUnit === 'month'
             ? 'MM'
             : 'YYYY';
-    }
-  }
-}
-
-function setTime(
-  event: InputEvent,
-  timeUnit: keyof typeof dateTimeInput.time
-) {
-  if (!event.target) {
-    return;
-  }
-  if (event.inputType === 'insertText') {
-    if (isNaN(Number(event.data))) {
-      dateTimeInput.time[timeUnit] =
-        event.target._value.slice(
-          0,
-          event.target._value.length - 1
-        );
-    } else {
-      if (
-        checkMoreThanMaximumTime(
-          dateTimeInput.time.hour,
-          dateTimeInput.time.minute
-        )
-      ) {
-        if (dateTimeInput.time[timeUnit]) {
-          dateTimeInput.time[timeUnit] = dateTimeInput.time[
-            timeUnit
-          ].slice(0, 2);
-        }
-      } else if (
-        checkLessThanTen(dateTimeInput.time[timeUnit])
-      ) {
-        dateTimeInput.time[timeUnit] = '0' + event.data;
-      } else {
-        if (dateTimeInput.time[timeUnit]) {
-          dateTimeInput.time[timeUnit] =
-            dateTimeInput.time[timeUnit][1] + event.data;
-        }
-      }
-    }
-  } else {
-    if (!isNaN(Number(event.data))) {
-      dateTimeInput.time[timeUnit] =
-        timeUnit === 'hour' ? 'HH' : 'mm';
     }
   }
 }

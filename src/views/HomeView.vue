@@ -2,7 +2,18 @@
   <main>
     <v-row>
       <v-col>
-        <DateTimePicker timeType="militaryTime" />
+        <DateTimePicker
+          timeType="None"
+          variantType="tonal"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <DateTimePicker
+          timeType="militaryTime"
+          variantType="tonal"
+        />
       </v-col>
     </v-row>
     <v-row>
