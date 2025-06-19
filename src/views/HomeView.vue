@@ -5,6 +5,8 @@
         <DateTimePicker
           timeType="None"
           variantType="tonal"
+          color="stageDark4"
+          clearable
         />
       </v-col>
     </v-row>

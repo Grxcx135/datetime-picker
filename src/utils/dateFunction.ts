@@ -32,3 +32,13 @@ export function checkLessThanTen(
     Number(inputNumber) < 10 || isNaN(Number(inputNumber))
   );
 }
+
+export function setDefaultByDateUnit(
+  dateUnit: string
+): string {
+  return dateUnit === 'day'
+    ? 'DD'
+    : dateUnit === 'month'
+      ? 'MM'
+      : 'YYYY';
+}

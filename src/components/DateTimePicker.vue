@@ -4,6 +4,12 @@
       v-if="props.timeType === 'None'"
       :variantType="props.variantType"
       :width="props.width"
+      :defaultDate="props.defaultDate"
+      :clearable="props.clearable"
+      :color="props.color"
+      :disabled="props.disabled"
+      :height="props.height"
+      :position="props.position"
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
@@ -32,7 +38,18 @@ const props = defineProps<{
     | 'tonal'
     | 'outlined'
     | 'plain';
+  position?:
+    | 'fixed'
+    | 'relative'
+    | 'static'
+    | 'absolute'
+    | 'sticky';
   width?: string;
+  defaultDate?: string;
+  clearable?: true;
+  color?: string;
+  disabled?: true;
+  height?: string | number;
 }>();
 </script>
 

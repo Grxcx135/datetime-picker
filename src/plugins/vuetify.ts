@@ -9,7 +9,8 @@ import {
   mdiCloseCircle,
   mdiEye,
   mdiEyeOff,
-  mdiCalendarMonthOutline
+  mdiCalendarMonthOutline,
+  mdiWindowClose
 } from '@mdi/js';
 
 import { VDateInput } from 'vuetify/labs/VDateInput';
@@ -79,7 +80,8 @@ const vuetify = createVuetify({
       closeCircle: mdiCloseCircle,
       eyeOpen: mdiEye,
       eyeClose: mdiEyeOff,
-      calendarMonthOutline: mdiCalendarMonthOutline
+      calendarMonthOutline: mdiCalendarMonthOutline,
+      clearable: mdiWindowClose
     },
     sets: {
       mdi
