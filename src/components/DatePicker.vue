@@ -57,14 +57,14 @@
         ></v-icon>
       </div>
     </v-card>
-    <p>Date is {{ convertToDate() }}</p>
+    <p>Date is {{ dateFormatted }}</p>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { isNaN } from 'lodash';
-import { formatDateWithSlash } from '@/utils/formatDate';
+import { ref, reactive, onMounted, watch } from 'vue';
+import { isNaN, isNil } from 'lodash';
+import { formatDate } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
 import {
   checkMoreThanMaximumMonthAndYear,
@@ -72,36 +72,14 @@ import {
   checkLessThanTen,
   setDefaultByDateUnit
 } from '@/utils/dateFunction';
+import {
+  dateTimeProps,
+  defaultDateTimeProps
+} from './DateTimeProps';
 
 const props = withDefaults(
-  defineProps<{
-    defaultDate?: string;
-    variantType?:
-      | 'flat'
-      | 'text'
-      | 'elevated'
-      | 'tonal'
-      | 'outlined'
-      | 'plain';
-    position?:
-      | 'fixed'
-      | 'relative'
-      | 'static'
-      | 'absolute'
-      | 'sticky';
-    width?: string | number;
-    clearable?: boolean;
-    color?: string;
-    disabled?: boolean;
-    height?: string | number;
-  }>(),
-  {
-    variantType: 'outlined',
-    width: '200px',
-    height: '30px',
-    clearable: false,
-    disabled: false
-  }
+  defineProps<dateTimeProps>(),
+  defaultDateTimeProps
 );
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
@@ -119,6 +97,8 @@ function setDefaultDate() {
     time: { hour: 'HH', minute: 'mm' }
   });
   Object.assign(dateTimeInput, defaultDateTime);
+  dateFormatted.value = undefined;
+  dateTypeDate.value = undefined;
 }
 
 onMounted(() => {
@@ -139,10 +119,21 @@ function convertToDate() {
     Number(dateTimeInput.date.day)
   );
   dateTypeDate.value = dateStringConvertToDate;
-  dateFormatted.value = formatDateWithSlash(
-    dateStringConvertToDate
+  dateFormatted.value = formatDate(
+    dateStringConvertToDate,
+    props.dateForm,
+    props.space
   );
-  return dateFormatted.value;
+  if (dateFormatted.value !== 'Invalid Date') {
+    const minDateTypeDate = new Date(props.minDate ?? '');
+    const maxDateTypeDate = new Date(props.maxDate ?? '');
+    if (
+      dateStringConvertToDate < minDateTypeDate ||
+      dateStringConvertToDate > maxDateTypeDate
+    ) {
+      setDefaultDate();
+    }
+  }
 }
 
 function setDate(
@@ -198,6 +189,11 @@ function setDate(
       dateTimeInput.date[dateUnit] =
         setDefaultByDateUnit(dateUnit);
     }
+  }
+  if (
+    String(Number(dateTimeInput.date.year)).length === 4
+  ) {
+    convertToDate();
   }
 }
 </script>

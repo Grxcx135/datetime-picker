@@ -7,6 +7,9 @@
           variantType="tonal"
           color="stageDark4"
           clearable
+          dateForm="/"
+          minDate="5/6/2560"
+          maxDate="5/6/2561"
         />
       </v-col>
     </v-row>

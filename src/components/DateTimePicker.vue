@@ -10,6 +10,10 @@
       :disabled="props.disabled"
       :height="props.height"
       :position="props.position"
+      :dateForm="props.dateForm"
+      :space="props.space"
+      :minDate="props.minDate"
+      :maxDate="props.maxDate"
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
@@ -28,28 +32,23 @@
 import DatePickerMilitaryTime from './DatePickerMilitaryTime.vue';
 import DatePickerTwelveHourClock from './DatePickerTwelveHourClock.vue';
 import DatePicker from './DatePicker.vue';
+import type { positionType } from './DateTimeProps';
+import type { variantType as variant } from './DateTimeProps';
 
 const props = defineProps<{
   timeType: 'None' | 'militaryTime' | 'twelveHour';
-  variantType?:
-    | 'flat'
-    | 'text'
-    | 'elevated'
-    | 'tonal'
-    | 'outlined'
-    | 'plain';
-  position?:
-    | 'fixed'
-    | 'relative'
-    | 'static'
-    | 'absolute'
-    | 'sticky';
+  variantType?: variant;
+  position?: positionType;
   width?: string;
   defaultDate?: string;
   clearable?: true;
   color?: string;
   disabled?: true;
   height?: string | number;
+  dateForm?: string;
+  space?: number;
+  minDate?: string;
+  maxDate?: string;
 }>();
 </script>
 

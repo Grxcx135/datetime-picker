@@ -84,7 +84,7 @@ import dayjs from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 import { isNaN } from 'lodash';
 import {
-  formatDateWithSlash,
+  formatDate,
   formatDateWithTime
 } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
@@ -114,8 +114,10 @@ function convertToDate() {
       : 0
   );
   dateTypeDate.value = dateStringConvertToDate;
-  dateFormatted.value = formatDateWithSlash(
-    dateStringConvertToDate
+  dateFormatted.value = formatDate(
+    dateStringConvertToDate,
+    '/',
+    0
   );
   dateFormattedWithTime.value = formatDateWithTime(
     dateStringConvertToDate
