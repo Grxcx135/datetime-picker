@@ -1,6 +1,7 @@
 <template>
   <v-container :fluid="true" class="pa-0">
     <v-card
+      v-model="dateFormatted"
       :variant="props.variantType"
       :width="props.width"
       :color="props.color"
@@ -78,6 +79,7 @@ import {
 } from '@/utils/dateFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
+const emit = defineEmits(['update:dateInput']);
 
 const props = withDefaults(
   defineProps<dateTimeProps>(),
@@ -101,6 +103,7 @@ function setDefaultDate() {
   Object.assign(dateTimeInput, defaultDateTime);
   dateFormatted.value = undefined;
   dateTypeDate.value = undefined;
+  convertToDate();
 }
 
 onMounted(() => {
@@ -145,6 +148,7 @@ function convertToDate() {
       setDefaultDate();
     }
   }
+  emit('update:dateInput', dateFormatted.value);
 }
 
 function setDate(

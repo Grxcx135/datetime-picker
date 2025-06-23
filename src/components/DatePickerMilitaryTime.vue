@@ -1,15 +1,19 @@
 <template>
   <v-container :fluid="true" class="pa-0">
     <v-card
-      elevation="0"
       :variant="props.variantType"
-      style="display: flex; align-items: center"
       :width="props.width"
+      :color="props.color"
+      :height="props.height"
+      :position="props.position"
+      :rounded="props.borderRadius"
+      :elevation="props.elevationNumber"
+      style="display: flex; align-items: center"
       class="pa-2 pb-0"
     >
-      <v-row class="">
+      <v-row>
         <v-col
-          cols="7"
+          :cols="props.clearable ? '7' : '7'"
           class="pa-2 d-flex flex-row pt-0 pr-0"
         >
           <v-col cols="3" class="pa-0"
@@ -18,6 +22,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'day')"
             >
             </v-text-field></v-col
@@ -28,6 +34,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'month')"
             ></v-text-field></v-col
           ><span class="size-text">/</span>
@@ -37,6 +45,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'year')"
             ></v-text-field
           ></v-col>
@@ -59,26 +69,34 @@
           ></v-text-field>
         </v-col>
       </v-row>
+      <div>
+        <v-icon
+          v-if="props.clearable && !disabled && !readonly"
+          icon="$clearable"
+          class="pt-0 pb-2 px-1"
+          @click="setDefaultDate()"
+        ></v-icon>
+      </div>
     </v-card>
-    <p>Date is {{ convertToDate() }}</p>
-    <p>Date Time is {{ dateFormattedWithTime }}</p>
+    <p>Date Time is {{ dateFormatted }}</p>
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { isNaN } from 'lodash';
-import {
-  formatDate,
-  formatDateWithTime
-} from '@/utils/formatDate';
+import { formatDateWithTime } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
 import {
   checkMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
-  checkLessThanTen
+  checkLessThanTen,
+  setDefaultByDateUnit
 } from '@/utils/dateFunction';
-import { checkMoreThanMaximumTime } from '@/utils/timeFunction';
+import {
+  checkMoreThanMaximumTime,
+  setDefaultByTimeUnit
+} from '@/utils/timeFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
 
@@ -88,7 +106,6 @@ const props = withDefaults(
 );
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
-const dateFormattedWithTime = ref<string | undefined>();
 
 const dateTimeInput = reactive(
   new dateTime({
@@ -96,6 +113,26 @@ const dateTimeInput = reactive(
     time: { hour: 'HH', minute: 'mm' }
   })
 );
+
+onMounted(() => {
+  if (props.defaultDate) {
+    const dateFormInput = props.defaultDate.split('/');
+    Object.keys(dateTimeInput.date).forEach(
+      (key, index) => {
+        dateTimeInput.date[key] =
+          Number(dateFormInput[index]) > 10 &&
+          key !== 'year'
+            ? dateFormInput[index]
+            : key === 'year'
+              ? '0'.repeat(
+                  4 - dateFormInput[index].length
+                ) + dateFormInput[index]
+              : '0' + dateFormInput[index];
+      }
+    );
+    convertToDate();
+  }
+});
 
 function convertToDate() {
   const dateStringConvertToDate = new Date(
@@ -110,15 +147,22 @@ function convertToDate() {
       : 0
   );
   dateTypeDate.value = dateStringConvertToDate;
-  dateFormatted.value = formatDate(
+  dateFormatted.value = formatDateWithTime(
     dateStringConvertToDate,
-    '/',
-    0
+    props.dateForm,
+    props.space
   );
-  dateFormattedWithTime.value = formatDateWithTime(
-    dateStringConvertToDate
-  );
-  return dateFormatted.value;
+  console.log(dateFormatted.value);
+  if (dateFormatted.value !== 'Invalid Date') {
+    const minDateTypeDate = new Date(props.minDate ?? '');
+    const maxDateTypeDate = new Date(props.maxDate ?? '');
+    if (
+      dateStringConvertToDate < minDateTypeDate ||
+      dateStringConvertToDate > maxDateTypeDate
+    ) {
+      setDefaultDate();
+    }
+  }
 }
 
 function setDate(
@@ -131,10 +175,7 @@ function setDate(
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
       dateTimeInput.date[dateUnit] =
-        event.target._value.slice(
-          0,
-          event.target._value.length - 1
-        );
+        setDefaultByDateUnit(dateUnit);
     } else {
       if (
         checkMoreThanMaximumMonthAndYear(
@@ -175,12 +216,13 @@ function setDate(
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.date[dateUnit] =
-        dateUnit === 'day'
-          ? 'DD'
-          : dateUnit === 'month'
-            ? 'MM'
-            : 'YYYY';
+        setDefaultByDateUnit(dateUnit);
     }
+  }
+  if (
+    String(Number(dateTimeInput.date.year)).length === 4
+  ) {
+    convertToDate();
   }
 }
 
@@ -224,9 +266,20 @@ function setTime(
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.time[timeUnit] =
-        timeUnit === 'hour' ? 'HH' : 'mm';
+        setDefaultByTimeUnit(timeUnit);
     }
   }
+  convertToDate();
+}
+
+function setDefaultDate() {
+  const defaultDateTime = new dateTime({
+    date: { day: 'DD', month: 'MM', year: 'YYYY' },
+    time: { hour: 'HH', minute: 'mm' }
+  });
+  Object.assign(dateTimeInput, defaultDateTime);
+  dateFormatted.value = undefined;
+  dateTypeDate.value = undefined;
 }
 </script>
 

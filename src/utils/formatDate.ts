@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, isNaN } from 'lodash';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
@@ -10,13 +10,17 @@ dayjs.extend(customParseFormat);
 
 const timezoneThai = 'Asia/Bangkok';
 
+function formatSpace(form: string, space: number): string {
+  return `${' '.repeat(space)}${form}${' '.repeat(space)}`;
+}
+
 export function formatDate(
   date: Date,
   formatForm: string,
   space: number
 ) {
-  const formWithSpace = `${' '.repeat(space)}${formatForm}${' '.repeat(space)}`;
-  return !isNil(date)
+  const formWithSpace = formatSpace(formatForm, space);
+  return !isNil(date) && !isNaN(date.getTime())
     ? dayjs(date)
         .tz(timezoneThai)
         .format(`DD${formWithSpace}MM${formWithSpace}YYYY`)
@@ -37,11 +41,18 @@ export function formatDateDashWithTime(date: Date) {
     : '';
 }
 
-export function formatDateWithTime(date: Date) {
-  return !isNil(date)
+export function formatDateWithTime(
+  date: Date,
+  formatForm: string,
+  space: number
+) {
+  const formWithSpace = formatSpace(formatForm, space);
+  return !isNil(date) && !isNaN(date.getTime())
     ? dayjs(date)
         .tz(timezoneThai)
-        .format('DD/MM/YYYY [Time] HH:mm')
+        .format(
+          `DD${formWithSpace}MM${formWithSpace}YYYY HH:mm`
+        )
     : '';
 }
 
