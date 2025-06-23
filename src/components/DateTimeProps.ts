@@ -43,6 +43,7 @@ export interface dateTimeProps {
   minDate?: string;
   readonly?: boolean;
   borderRadius?: roundedType;
+  elevationNumber?: number | string;
 }
 
 export const defaultDateTimeProps: Required<
@@ -57,6 +58,7 @@ export const defaultDateTimeProps: Required<
     | 'space'
     | 'readonly'
     | 'borderRadius'
+    | 'elevationNumber'
   >
 > = {
   variantType: 'outlined',
@@ -67,5 +69,6 @@ export const defaultDateTimeProps: Required<
   dateForm: '/',
   space: 0,
   readonly: false,
-  borderRadius: 'md'
+  borderRadius: 'md',
+  elevationNumber: 0
 };

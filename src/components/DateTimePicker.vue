@@ -16,6 +16,7 @@
       :maxDate="props.maxDate"
       :readonly="props.readonly"
       :borderRadius="props.borderRadius"
+      :elevationNumber="props.elevationNumber"
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
@@ -54,6 +55,7 @@ const props = defineProps<{
   maxDate?: string;
   readonly?: true;
   borderRadius?: roundedType;
+  elevationNumber?: number | string;
 }>();
 </script>
 

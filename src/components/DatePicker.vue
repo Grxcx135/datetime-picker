@@ -1,13 +1,13 @@
 <template>
   <v-container :fluid="true" class="pa-0">
     <v-card
-      elevation="0"
       :variant="props.variantType"
       :width="props.width"
       :color="props.color"
       :height="props.height"
       :position="props.position"
       :rounded="props.borderRadius"
+      :elevation="props.elevationNumber"
       style="display: flex; align-items: center"
       class="pa-2 pb-0"
     >
@@ -54,7 +54,7 @@
       </v-row>
       <div>
         <v-icon
-          v-if="props.clearable && !disabled"
+          v-if="props.clearable && !disabled && !readonly"
           icon="$clearable"
           class="pt-0 pb-2 pr-2"
           @click="setDefaultDate()"

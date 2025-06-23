@@ -79,22 +79,12 @@ import {
   checkLessThanTen
 } from '@/utils/dateFunction';
 import { checkMoreThanMaximumTime } from '@/utils/timeFunction';
+import type { dateTimeProps } from './DateTimeProps';
+import { defaultDateTimeProps } from './DateTimeProps';
 
 const props = withDefaults(
-  defineProps<{
-    variantType?:
-      | 'flat'
-      | 'text'
-      | 'elevated'
-      | 'tonal'
-      | 'outlined'
-      | 'plain';
-    width?: string;
-  }>(),
-  {
-    variantType: 'outlined',
-    width: '200px'
-  }
+  defineProps<dateTimeProps>(),
+  defaultDateTimeProps
 );
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
