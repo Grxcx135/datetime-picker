@@ -14,6 +14,8 @@
       :space="props.space"
       :minDate="props.minDate"
       :maxDate="props.maxDate"
+      :readonly="props.readonly"
+      :borderRadius="props.borderRadius"
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
@@ -34,6 +36,7 @@ import DatePickerTwelveHourClock from './DatePickerTwelveHourClock.vue';
 import DatePicker from './DatePicker.vue';
 import type { positionType } from './DateTimeProps';
 import type { variantType as variant } from './DateTimeProps';
+import type { roundedType } from './DateTimeProps';
 
 const props = defineProps<{
   timeType: 'None' | 'militaryTime' | 'twelveHour';
@@ -49,6 +52,8 @@ const props = defineProps<{
   space?: number;
   minDate?: string;
   maxDate?: string;
+  readonly?: true;
+  borderRadius?: roundedType;
 }>();
 </script>
 

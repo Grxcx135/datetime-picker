@@ -7,6 +7,7 @@
       :color="props.color"
       :height="props.height"
       :position="props.position"
+      :rounded="props.borderRadius"
       style="display: flex; align-items: center"
       class="pa-2 pb-0"
     >
@@ -22,6 +23,7 @@
               variant="plain"
               hide-details
               :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'day')"
             >
             </v-text-field></v-col
@@ -33,6 +35,7 @@
               variant="plain"
               hide-details
               :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'month')"
             ></v-text-field></v-col
           ><span class="size-text">/</span>
@@ -43,6 +46,7 @@
               variant="plain"
               hide-details
               :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'year')"
             ></v-text-field
           ></v-col>
@@ -72,10 +76,8 @@ import {
   checkLessThanTen,
   setDefaultByDateUnit
 } from '@/utils/dateFunction';
-import {
-  dateTimeProps,
-  defaultDateTimeProps
-} from './DateTimeProps';
+import type { dateTimeProps } from './DateTimeProps';
+import { defaultDateTimeProps } from './DateTimeProps';
 
 const props = withDefaults(
   defineProps<dateTimeProps>(),
@@ -106,9 +108,18 @@ onMounted(() => {
     const dateFormInput = props.defaultDate.split('/');
     Object.keys(dateTimeInput.date).forEach(
       (key, index) => {
-        dateTimeInput.date[key] = dateFormInput[index];
+        dateTimeInput.date[key] =
+          Number(dateFormInput[index]) > 10 &&
+          key !== 'year'
+            ? dateFormInput[index]
+            : key === 'year'
+              ? '0'.repeat(
+                  4 - dateFormInput[index].length
+                ) + dateFormInput[index]
+              : '0' + dateFormInput[index];
       }
     );
+    convertToDate();
   }
 });
 

@@ -17,6 +17,17 @@ export const position = [
 ] as const;
 export type positionType = (typeof position)[number];
 
+export const rounded = [
+  '0',
+  'sm',
+  'md',
+  'lg',
+  'xl',
+  'pill',
+  'circle'
+] as const;
+export type roundedType = (typeof rounded)[number];
+
 export interface dateTimeProps {
   defaultDate?: string;
   variantType?: variantType;
@@ -30,6 +41,8 @@ export interface dateTimeProps {
   space?: number;
   maxDate?: string;
   minDate?: string;
+  readonly?: boolean;
+  borderRadius?: roundedType;
 }
 
 export const defaultDateTimeProps: Required<
@@ -42,6 +55,8 @@ export const defaultDateTimeProps: Required<
     | 'disabled'
     | 'dateForm'
     | 'space'
+    | 'readonly'
+    | 'borderRadius'
   >
 > = {
   variantType: 'outlined',
@@ -50,5 +65,7 @@ export const defaultDateTimeProps: Required<
   clearable: false,
   disabled: false,
   dateForm: '/',
-  space: 0
+  space: 0,
+  readonly: false,
+  borderRadius: 'md'
 };

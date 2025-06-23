@@ -4,12 +4,11 @@
       <v-col>
         <DateTimePicker
           timeType="None"
-          variantType="tonal"
+          variantType="outlined"
           color="stageDark4"
-          clearable
           dateForm="/"
-          minDate="5/6/2560"
-          maxDate="5/6/2561"
+          minDate="2/3/2532"
+          maxDate="2/3/2533"
         />
       </v-col>
     </v-row>
