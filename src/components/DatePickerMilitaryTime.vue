@@ -13,7 +13,7 @@
     >
       <v-row>
         <v-col
-          :cols="props.clearable ? '7' : '7'"
+          cols="7"
           class="pa-2 d-flex flex-row pt-0 pr-0"
         >
           <v-col cols="3" class="pa-0"
@@ -247,6 +247,7 @@ function setDefaultDate() {
   Object.assign(dateTimeInput, defaultDateTime);
   dateFormatted.value = undefined;
   dateTypeDate.value = undefined;
+  emit('update:militaryInput', dateFormatted.value);
 }
 
 function addDateInDateTimeInput(

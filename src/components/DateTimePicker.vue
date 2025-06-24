@@ -42,6 +42,20 @@
       v-else-if="props.timeType === 'twelveHour'"
       :variantType="props.variantType"
       :width="props.width"
+      :defaultDate="props.defaultDate"
+      :clearable="props.clearable"
+      :color="props.color"
+      :disabled="props.disabled"
+      :height="props.height"
+      :position="props.position"
+      :dateForm="props.dateForm"
+      :space="props.space"
+      :minDate="props.minDate"
+      :maxDate="props.maxDate"
+      :readonly="props.readonly"
+      :borderRadius="props.borderRadius"
+      :elevationNumber="props.elevationNumber"
+      @update:twelveHourInput="handleEmit($event)"
     />
   </v-container>
 </template>
@@ -77,6 +91,7 @@ const props = defineProps<{
 }>();
 
 function handleEmit(event: InputEvent) {
+  console.log(event);
   emit('update:dateInput', event);
 }
 </script>

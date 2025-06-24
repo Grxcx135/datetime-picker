@@ -10,3 +10,34 @@ export function setDefaultByTimeUnit(
 ): string {
   return timeUnit === 'hour' ? 'HH' : 'mm';
 }
+
+export function isMoreThanMaximumTwelveTime(
+  meridiemType: string,
+  hour: string,
+  minute: string
+): boolean {
+  return meridiemType === 'PM'
+    ? Number(hour) > 12
+    : Number(hour) > 12 || Number(minute) > 60;
+}
+
+export function setMeridiemType(meridiem: string): string {
+  return (meridiem ?? '').toLowerCase() === 'p'
+    ? 'PM'
+    : (meridiem ?? '').toLowerCase() === 'a'
+      ? 'AM'
+      : 'aa';
+}
+
+export function calculateHour(
+  meridiem: string,
+  hour: string
+): number {
+  return meridiem === 'PM'
+    ? Number(hour) === 12
+      ? Number(hour)
+      : Number(hour) + 12
+    : Number(hour) === 12
+      ? 0
+      : Number(hour);
+}

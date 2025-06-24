@@ -1,10 +1,14 @@
 <template>
   <v-container :fluid="true" class="pa-0">
     <v-card
-      elevation="0"
-      variant="outlined"
+      :variant="props.variantType"
+      :width="props.width"
+      :color="props.color"
+      :height="props.height"
+      :position="props.position"
+      :rounded="props.borderRadius"
+      :elevation="props.elevationNumber"
       style="display: flex; align-items: center"
-      width="230px"
       class="pa-2 pb-0"
     >
       <v-row class="">
@@ -18,6 +22,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'day')"
             >
             </v-text-field></v-col
@@ -28,6 +34,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'month')"
             ></v-text-field></v-col
           ><span class="size-text">/</span>
@@ -37,6 +45,8 @@
               label=""
               variant="plain"
               hide-details
+              :disabled="props.disabled"
+              :readonly="props.readonly"
               @input="setDate($event, 'year')"
             ></v-text-field
           ></v-col>
@@ -72,9 +82,15 @@
           ></v-col>
         </v-col>
       </v-row>
+      <div>
+        <v-icon
+          v-if="props.clearable && !disabled && !readonly"
+          icon="$clearable"
+          class="pt-0 pb-2 px-1"
+          @click="setDefaultDate()"
+        ></v-icon>
+      </div>
     </v-card>
-    <p>Date is {{ convertToDate() }}</p>
-    <p>Date Time is {{ dateFormattedWithTime }}</p>
   </v-container>
 </template>
 
@@ -83,15 +99,31 @@ import { ref, watch, computed, reactive } from 'vue';
 import dayjs from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 import { isNaN } from 'lodash';
-import {
-  formatDate,
-  formatDateWithTime
-} from '@/utils/formatDate';
+import { formatDateWithMeridiemTime } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
+import type { dateTimeProps } from './DateTimeProps';
+import { defaultDateTimeProps } from './DateTimeProps';
+import {
+  isMoreThanMaximumMonthAndYear,
+  isMoreThanMaximumDays,
+  isLessThanTen,
+  setDefaultByDateUnit
+} from '@/utils/dateFunction';
+import {
+  isMoreThanMaximumTwelveTime,
+  setMeridiemType as selectMeridiemType,
+  setDefaultByTimeUnit,
+  calculateHour
+} from '@/utils/timeFunction';
+
+const emit = defineEmits(['update:twelveHourInput']);
+const props = withDefaults(defineProps<dateTimeProps>(), {
+  ...defaultDateTimeProps,
+  width: '250px'
+});
 
 dayjs.extend(isLeapYear);
 const dateTypeDate = ref<Date | undefined>();
-const dateFormatted = ref<string | undefined>();
 const dateFormattedWithTime = ref<string | undefined>();
 
 const dateTimeInput = reactive(
@@ -107,28 +139,36 @@ function convertToDate() {
     Number(dateTimeInput.date.month) - 1,
     Number(dateTimeInput.date.day),
     !isNaN(Number(dateTimeInput.time.hour))
-      ? calculateHour()
+      ? calculateHour(
+          dateTimeInput.time.meridiemType ?? 'a',
+          dateTimeInput.time.hour
+        )
       : 0,
     !isNaN(Number(dateTimeInput.time.minute))
       ? Number(dateTimeInput.time.minute)
       : 0
   );
   dateTypeDate.value = dateStringConvertToDate;
-  dateFormatted.value = formatDate(
+  dateFormattedWithTime.value = formatDateWithMeridiemTime(
     dateStringConvertToDate,
-    '/',
-    0
+    props.dateForm,
+    props.space
   );
-  dateFormattedWithTime.value = formatDateWithTime(
-    dateStringConvertToDate
-  );
-  return dateFormatted.value;
-}
-
-function calculateHour(): number {
-  return dateTimeInput.time.meridiemType === 'PM'
-    ? Number(dateTimeInput.time.hour) + 12
-    : Number(dateTimeInput.time.hour);
+  if (dateFormattedWithTime.value !== 'Invalid Date') {
+    const minDateTypeDate = new Date(props.minDate ?? '');
+    const maxDateTypeDate = new Date(props.maxDate ?? '');
+    if (
+      dateStringConvertToDate < minDateTypeDate ||
+      dateStringConvertToDate > maxDateTypeDate
+    ) {
+      setDefaultDate();
+    } else {
+      emit(
+        'update:twelveHourInput',
+        dateFormattedWithTime.value
+      );
+    }
+  }
 }
 
 function setDate(
@@ -141,43 +181,21 @@ function setDate(
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
       dateTimeInput.date[dateUnit] =
-        event.target._value.slice(
-          0,
-          event.target._value.length - 1
-        );
+        setDefaultByDateUnit(dateUnit);
     } else {
-      if (checkMoreThanMaximumMonthAndYear()) {
-        dateTimeInput.date[dateUnit] = dateTimeInput.date[
-          dateUnit
-        ].slice(0, dateTimeInput.date[dateUnit].length - 1);
-      } else if (isMoreThanMaximumDays()) {
-        dateTimeInput.date.day = 'DD';
-        dateTimeInput.date.month =
-          Number(dateTimeInput.date.month) < 10
-            ? '0' + Number(dateTimeInput.date.month)
-            : dateTimeInput.date.month;
-      } else if (checkLessThanTenOfDate(dateUnit)) {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? '000' + event.data
-            : '0' + event.data;
-      } else {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? dateTimeInput.date.year.slice(1, 4) +
-              event.data
-            : dateTimeInput.date[dateUnit][1] + event.data;
-      }
+      addDateInDateTimeInput(event, dateUnit);
+      moreThanMaximumDate(dateUnit);
     }
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.date[dateUnit] =
-        dateUnit === 'day'
-          ? 'DD'
-          : dateUnit === 'month'
-            ? 'MM'
-            : 'YYYY';
+        setDefaultByDateUnit(dateUnit);
     }
+  }
+  if (
+    String(Number(dateTimeInput.date.year)).length === 4
+  ) {
+    convertToDate();
   }
 }
 
@@ -196,13 +214,21 @@ function setTime(
           event.target._value.length - 1
         );
     } else {
-      if (checkMoreThanMaximumTime()) {
+      if (
+        isMoreThanMaximumTwelveTime(
+          dateTimeInput.time.meridiemType ?? 'aa',
+          dateTimeInput.time.hour,
+          dateTimeInput.time.minute
+        )
+      ) {
         if (dateTimeInput.time[timeUnit]) {
           dateTimeInput.time[timeUnit] = dateTimeInput.time[
             timeUnit
           ].slice(0, 2);
         }
-      } else if (checkLessThanTenOfTime(timeUnit)) {
+      } else if (
+        isLessThanTen(dateTimeInput.time[timeUnit])
+      ) {
         dateTimeInput.time[timeUnit] = '0' + event.data;
       } else {
         if (dateTimeInput.time[timeUnit]) {
@@ -214,71 +240,89 @@ function setTime(
   } else {
     if (!isNaN(Number(event.data))) {
       dateTimeInput.time[timeUnit] =
-        timeUnit === 'hour' ? 'HH' : 'mm';
+        setDefaultByTimeUnit(timeUnit);
     }
   }
+  convertToDate();
+}
+
+function addDateInDateTimeInput(
+  event: InputEvent,
+  dateUnit: keyof typeof dateTimeInput.date
+) {
+  if (isLessThanTen(dateTimeInput.date[dateUnit])) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? '000' + event.data
+        : '0' + event.data;
+  } else {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? dateTimeInput.date.year.slice(1, 4) + event.data
+        : dateTimeInput.date[dateUnit][1] + event.data;
+  }
+}
+
+function moreThanMaximumDate(
+  dateUnit: keyof typeof dateTimeInput.date
+) {
+  if (
+    isMoreThanMaximumMonthAndYear(
+      dateTimeInput.date.month,
+      dateTimeInput.date.year
+    )
+  ) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? 'YYYY'
+        : 'MM';
+  } else if (
+    isMoreThanMaximumDays(
+      dateTimeInput.date.day,
+      dateTimeInput.date.month,
+      dateTypeDate.value
+    )
+  ) {
+    dateTimeInput.date.day = 'DD';
+    dateTimeInput.date.month =
+      Number(dateTimeInput.date.month) < 10
+        ? '0' + Number(dateTimeInput.date.month)
+        : dateTimeInput.date.month;
+  }
+}
+
+function setDefaultDate() {
+  const defaultDateTime = new dateTime({
+    date: { day: 'DD', month: 'MM', year: 'YYYY' },
+    time: { hour: 'HH', minute: 'mm', meridiemType: 'aa' }
+  });
+  Object.assign(dateTimeInput, defaultDateTime);
+  dateFormattedWithTime.value = undefined;
+  dateTypeDate.value = undefined;
+  emit(
+    'update:twelveHourInput',
+    dateFormattedWithTime.value
+  );
 }
 
 function setMeridiemType(event: InputEvent) {
   if (event.inputType === 'insertText') {
-    dateTimeInput.time.meridiemType =
-      (event.data ?? '').toLowerCase() === 'p'
-        ? 'PM'
-        : (event.data ?? '').toLowerCase() === 'a'
-          ? 'AM'
-          : 'aa';
+    dateTimeInput.time.meridiemType = selectMeridiemType(
+      event.data ?? 'aa'
+    );
   } else {
     dateTimeInput.time.meridiemType = 'aa';
   }
-  if (checkMoreThanMaximumTime()) {
+  if (
+    isMoreThanMaximumTwelveTime(
+      dateTimeInput.time.meridiemType ?? 'aa',
+      dateTimeInput.time.hour,
+      dateTimeInput.time.minute
+    )
+  ) {
     dateTimeInput.time.hour = 'HH';
   }
-}
-
-function checkMoreThanMaximumMonthAndYear(): boolean {
-  return (
-    Number(dateTimeInput.date.month) > 12 ||
-    String(Number(dateTimeInput.date.year)).length > 4
-  );
-}
-
-function isMoreThanMaximumDays(): boolean {
-  let maximumDate = 31;
-  if (
-    [4, 6, 9, 11].includes(Number(dateTimeInput.date.month))
-  ) {
-    maximumDate = 30;
-  } else if (Number(dateTimeInput.date.month) === 2) {
-    maximumDate = dayjs(dateTypeDate.value).isLeapYear()
-      ? 29
-      : 28;
-  }
-  return Number(dateTimeInput.date.day) > maximumDate;
-}
-
-function checkLessThanTenOfDate(
-  dateUnit: keyof typeof dateTimeInput.date
-): boolean {
-  return (
-    Number(dateTimeInput.date[dateUnit]) < 10 ||
-    isNaN(Number(dateTimeInput.date[dateUnit]))
-  );
-}
-
-function checkMoreThanMaximumTime(): boolean {
-  return dateTimeInput.time.meridiemType === 'PM'
-    ? Number(dateTimeInput.time.hour) > 11
-    : Number(dateTimeInput.time.hour) > 12 ||
-        Number(dateTimeInput.time.minute) > 60;
-}
-
-function checkLessThanTenOfTime(
-  timeUnit: keyof typeof dateTimeInput.time
-): boolean {
-  return (
-    Number(dateTimeInput.time[timeUnit]) < 10 ||
-    isNaN(Number(dateTimeInput.time[timeUnit]))
-  );
+  convertToDate();
 }
 </script>
 

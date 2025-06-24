@@ -22,7 +22,6 @@ export function isMoreThanMaximumDays(
   } else if (Number(month) === 2) {
     maximumDate = dayjs(date).isLeapYear() ? 29 : 28;
   }
-  console.log('more days : ', Number(day) > maximumDate);
   return Number(day) > maximumDate;
 }
 

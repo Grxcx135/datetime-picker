@@ -33,11 +33,18 @@ export function formatDateStartWithYear(date: Date) {
     : '';
 }
 
-export function formatDateDashWithTime(date: Date) {
+export function formatDateWithMeridiemTime(
+  date: Date,
+  formatForm: string,
+  space: number
+) {
+  const formWithSpace = formatSpace(formatForm, space);
   return !isNil(date)
     ? dayjs(date)
         .tz(timezoneThai)
-        .format('DD-MM-YYYY h:mm A')
+        .format(
+          `DD${formWithSpace}MM${formWithSpace}YYYY h:mm A`
+        )
     : '';
 }
 

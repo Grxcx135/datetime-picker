@@ -21,14 +21,18 @@
           timeType="militaryTime"
           variantType="tonal"
           color="red"
-          clearable
         />
         <span>Date is {{ dateTimeMilitaryPicker }}</span>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <DateTimePicker timeType="twelveHour" />
+        <DateTimePicker
+          v-model:date-input="dateTimeTwelvePicker"
+          timeType="twelveHour"
+          clearable
+        />
+        <span>Date is {{ dateTimeTwelvePicker }}</span>
       </v-col>
     </v-row>
   </main>
@@ -39,4 +43,5 @@ import { ref } from 'vue';
 import DateTimePicker from '@/components/DateTimePicker.vue';
 const datePicker = ref<string | undefined>();
 const dateTimeMilitaryPicker = ref<string | undefined>();
+const dateTimeTwelvePicker = ref<string | undefined>();
 </script>
