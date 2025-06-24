@@ -2,7 +2,7 @@ export function isMoreThanMaximumTime(
   hour: string,
   minute: string
 ): boolean {
-  return Number(hour) > 24 || Number(minute) > 60;
+  return Number(hour) > 23 || Number(minute) > 59;
 }
 
 export function setDefaultByTimeUnit(
