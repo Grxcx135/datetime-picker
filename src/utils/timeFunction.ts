@@ -12,13 +12,10 @@ export function setDefaultByTimeUnit(
 }
 
 export function isMoreThanMaximumTwelveTime(
-  meridiemType: string,
   hour: string,
   minute: string
 ): boolean {
-  return meridiemType === 'PM'
-    ? Number(hour) > 12
-    : Number(hour) > 12 || Number(minute) > 60;
+  return Number(hour) > 12 || Number(minute) > 59;
 }
 
 export function setMeridiemType(meridiem: string): string {

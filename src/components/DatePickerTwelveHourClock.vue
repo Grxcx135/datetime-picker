@@ -216,7 +216,6 @@ function setTime(
     } else {
       if (
         isMoreThanMaximumTwelveTime(
-          dateTimeInput.time.meridiemType ?? 'aa',
           dateTimeInput.time.hour,
           dateTimeInput.time.minute
         )
@@ -315,7 +314,6 @@ function setMeridiemType(event: InputEvent) {
   }
   if (
     isMoreThanMaximumTwelveTime(
-      dateTimeInput.time.meridiemType ?? 'aa',
       dateTimeInput.time.hour,
       dateTimeInput.time.minute
     )
