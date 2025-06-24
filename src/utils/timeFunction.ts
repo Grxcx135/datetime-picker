@@ -1,4 +1,4 @@
-export function checkMoreThanMaximumTime(
+export function isMoreThanMaximumTime(
   hour: string,
   minute: string
 ): boolean {

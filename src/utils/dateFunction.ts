@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 dayjs.extend(isLeapYear);
 
-export function checkMoreThanMaximumMonthAndYear(
+export function isMoreThanMaximumMonthAndYear(
   month: string,
   year: string
 ): boolean {
@@ -22,10 +22,11 @@ export function isMoreThanMaximumDays(
   } else if (Number(month) === 2) {
     maximumDate = dayjs(date).isLeapYear() ? 29 : 28;
   }
+  console.log('more days : ', Number(day) > maximumDate);
   return Number(day) > maximumDate;
 }
 
-export function checkLessThanTen(
+export function isLessThanTen(
   inputNumber: string | undefined
 ): boolean {
   return (

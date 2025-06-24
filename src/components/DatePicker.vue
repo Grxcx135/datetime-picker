@@ -62,7 +62,6 @@
         ></v-icon>
       </div>
     </v-card>
-    <p>Date is {{ dateFormatted }}</p>
   </v-container>
 </template>
 
@@ -72,9 +71,9 @@ import { isNaN, isNil } from 'lodash';
 import { formatDate } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
 import {
-  checkMoreThanMaximumMonthAndYear,
+  isMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
-  checkLessThanTen,
+  isLessThanTen,
   setDefaultByDateUnit
 } from '@/utils/dateFunction';
 import type { dateTimeProps } from './DateTimeProps';
@@ -164,28 +163,37 @@ function setDate(
         setDefaultByDateUnit(dateUnit);
     } else {
       if (
-        checkMoreThanMaximumMonthAndYear(
+        isMoreThanMaximumMonthAndYear(
           dateTimeInput.date.month,
           dateTimeInput.date.year
-        )
-      ) {
-        dateTimeInput.date[dateUnit] = dateTimeInput.date[
-          dateUnit
-        ].slice(0, dateTimeInput.date[dateUnit].length - 1);
-      } else if (
+        ) ||
         isMoreThanMaximumDays(
           dateTimeInput.date.day,
           dateTimeInput.date.month,
           dateTypeDate.value
         )
       ) {
-        dateTimeInput.date.day = 'DD';
-        dateTimeInput.date.month =
-          Number(dateTimeInput.date.month) < 10
-            ? '0' + Number(dateTimeInput.date.month)
-            : dateTimeInput.date.month;
+        if (
+          isMoreThanMaximumMonthAndYear(
+            dateTimeInput.date.month,
+            dateTimeInput.date.year
+          )
+        ) {
+          dateTimeInput.date[dateUnit] = dateTimeInput.date[
+            dateUnit
+          ].slice(
+            0,
+            dateTimeInput.date[dateUnit].length - 1
+          );
+        } else {
+          dateTimeInput.date.day = 'DD';
+          dateTimeInput.date.month =
+            Number(dateTimeInput.date.month) < 10
+              ? '0' + Number(dateTimeInput.date.month)
+              : dateTimeInput.date.month;
+        }
       } else if (
-        checkLessThanTen(dateTimeInput.date[dateUnit])
+        isLessThanTen(dateTimeInput.date[dateUnit])
       ) {
         dateTimeInput.date[dateUnit] =
           dateTimeInput.isDateUnitYear(dateUnit)

@@ -78,7 +78,6 @@
         ></v-icon>
       </div>
     </v-card>
-    <p>Date Time is {{ dateFormatted }}</p>
   </v-container>
 </template>
 
@@ -88,24 +87,25 @@ import { isNaN } from 'lodash';
 import { formatDateWithTime } from '@/utils/formatDate';
 import dateTime from '@/dto/dateTime.dto';
 import {
-  checkMoreThanMaximumMonthAndYear,
+  isMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
-  checkLessThanTen,
+  isLessThanTen,
   setDefaultByDateUnit
 } from '@/utils/dateFunction';
 import {
-  checkMoreThanMaximumTime,
+  isMoreThanMaximumTime,
   setDefaultByTimeUnit
 } from '@/utils/timeFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
 
-const props = withDefaults(
-  defineProps<dateTimeProps>(),
-  defaultDateTimeProps
-);
+const props = withDefaults(defineProps<dateTimeProps>(), {
+  ...defaultDateTimeProps,
+  width: '230px'
+});
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
+const emit = defineEmits(['update:militaryInput']);
 
 const dateTimeInput = reactive(
   new dateTime({
@@ -152,7 +152,6 @@ function convertToDate() {
     props.dateForm,
     props.space
   );
-  console.log(dateFormatted.value);
   if (dateFormatted.value !== 'Invalid Date') {
     const minDateTypeDate = new Date(props.minDate ?? '');
     const maxDateTypeDate = new Date(props.maxDate ?? '');
@@ -163,6 +162,7 @@ function convertToDate() {
       setDefaultDate();
     }
   }
+  emit('update:militaryInput', dateFormatted.value);
 }
 
 function setDate(
@@ -177,41 +177,8 @@ function setDate(
       dateTimeInput.date[dateUnit] =
         setDefaultByDateUnit(dateUnit);
     } else {
-      if (
-        checkMoreThanMaximumMonthAndYear(
-          dateTimeInput.date.month,
-          dateTimeInput.date.year
-        )
-      ) {
-        dateTimeInput.date[dateUnit] = dateTimeInput.date[
-          dateUnit
-        ].slice(0, dateTimeInput.date[dateUnit].length - 1);
-      } else if (
-        isMoreThanMaximumDays(
-          dateTimeInput.date.day,
-          dateTimeInput.date.month,
-          dateTypeDate.value
-        )
-      ) {
-        dateTimeInput.date.day = 'DD';
-        dateTimeInput.date.month =
-          Number(dateTimeInput.date.month) < 10
-            ? '0' + Number(dateTimeInput.date.month)
-            : dateTimeInput.date.month;
-      } else if (
-        checkLessThanTen(dateTimeInput.date[dateUnit])
-      ) {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? '000' + event.data
-            : '0' + event.data;
-      } else {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? dateTimeInput.date.year.slice(1, 4) +
-              event.data
-            : dateTimeInput.date[dateUnit][1] + event.data;
-      }
+      addDateInDateTimeInput(event, dateUnit);
+      moreThanMaximumDate(dateUnit);
     }
   } else {
     if (!isNaN(Number(event.data))) {
@@ -242,7 +209,7 @@ function setTime(
         );
     } else {
       if (
-        checkMoreThanMaximumTime(
+        isMoreThanMaximumTime(
           dateTimeInput.time.hour,
           dateTimeInput.time.minute
         )
@@ -253,7 +220,7 @@ function setTime(
           ].slice(0, 2);
         }
       } else if (
-        checkLessThanTen(dateTimeInput.time[timeUnit])
+        isLessThanTen(dateTimeInput.time[timeUnit])
       ) {
         dateTimeInput.time[timeUnit] = '0' + event.data;
       } else {
@@ -280,6 +247,49 @@ function setDefaultDate() {
   Object.assign(dateTimeInput, defaultDateTime);
   dateFormatted.value = undefined;
   dateTypeDate.value = undefined;
+}
+
+function moreThanMaximumDate(dateUnit: string) {
+  if (
+    isMoreThanMaximumMonthAndYear(
+      dateTimeInput.date.month,
+      dateTimeInput.date.year
+    )
+  ) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? 'YYYY'
+        : 'MM';
+  } else if (
+    isMoreThanMaximumDays(
+      dateTimeInput.date.day,
+      dateTimeInput.date.month,
+      dateTypeDate.value
+    )
+  ) {
+    dateTimeInput.date.day = 'DD';
+    dateTimeInput.date.month =
+      Number(dateTimeInput.date.month) < 10
+        ? '0' + Number(dateTimeInput.date.month)
+        : dateTimeInput.date.month;
+  }
+}
+
+function addDateInDateTimeInput(
+  event: InputEvent,
+  dateUnit: string
+) {
+  if (isLessThanTen(dateTimeInput.date[dateUnit])) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? '000' + event.data
+        : '0' + event.data;
+  } else {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? dateTimeInput.date.year.slice(1, 4) + event.data
+        : dateTimeInput.date[dateUnit][1] + event.data;
+  }
 }
 </script>
 

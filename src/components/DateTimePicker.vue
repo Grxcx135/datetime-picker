@@ -36,6 +36,7 @@
       :readonly="props.readonly"
       :borderRadius="props.borderRadius"
       :elevationNumber="props.elevationNumber"
+      @update:militaryInput="handleEmit($event)"
     />
     <DatePickerTwelveHourClock
       v-else-if="props.timeType === 'twelveHour'"

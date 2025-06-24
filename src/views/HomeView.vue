@@ -11,17 +11,19 @@
           minDate="2/3/2532"
           maxDate="2/3/2533"
         />
-        <span>date is {{ datePicker }}</span>
+        <span>Date is {{ datePicker }}</span>
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <DateTimePicker
+          v-model:date-input="dateTimeMilitaryPicker"
           timeType="militaryTime"
-          width="230px"
           variantType="tonal"
+          color="red"
           clearable
         />
+        <span>Date is {{ dateTimeMilitaryPicker }}</span>
       </v-col>
     </v-row>
     <v-row>
@@ -36,4 +38,5 @@
 import { ref } from 'vue';
 import DateTimePicker from '@/components/DateTimePicker.vue';
 const datePicker = ref<string | undefined>();
+const dateTimeMilitaryPicker = ref<string | undefined>();
 </script>
