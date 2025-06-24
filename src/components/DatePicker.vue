@@ -162,50 +162,8 @@ function setDate(
       dateTimeInput.date[dateUnit] =
         setDefaultByDateUnit(dateUnit);
     } else {
-      if (
-        isMoreThanMaximumMonthAndYear(
-          dateTimeInput.date.month,
-          dateTimeInput.date.year
-        ) ||
-        isMoreThanMaximumDays(
-          dateTimeInput.date.day,
-          dateTimeInput.date.month,
-          dateTypeDate.value
-        )
-      ) {
-        if (
-          isMoreThanMaximumMonthAndYear(
-            dateTimeInput.date.month,
-            dateTimeInput.date.year
-          )
-        ) {
-          dateTimeInput.date[dateUnit] = dateTimeInput.date[
-            dateUnit
-          ].slice(
-            0,
-            dateTimeInput.date[dateUnit].length - 1
-          );
-        } else {
-          dateTimeInput.date.day = 'DD';
-          dateTimeInput.date.month =
-            Number(dateTimeInput.date.month) < 10
-              ? '0' + Number(dateTimeInput.date.month)
-              : dateTimeInput.date.month;
-        }
-      } else if (
-        isLessThanTen(dateTimeInput.date[dateUnit])
-      ) {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? '000' + event.data
-            : '0' + event.data;
-      } else {
-        dateTimeInput.date[dateUnit] =
-          dateTimeInput.isDateUnitYear(dateUnit)
-            ? dateTimeInput.date.year.slice(1, 4) +
-              event.data
-            : dateTimeInput.date[dateUnit][1] + event.data;
-      }
+      addDateInDateTimeInput(event, dateUnit);
+      moreThanMaximumDate(dateUnit);
     }
   } else {
     if (!isNaN(Number(event.data))) {
@@ -217,6 +175,51 @@ function setDate(
     String(Number(dateTimeInput.date.year)).length === 4
   ) {
     convertToDate();
+  }
+}
+
+function addDateInDateTimeInput(
+  event: InputEvent,
+  dateUnit: keyof typeof dateTimeInput.date
+) {
+  if (isLessThanTen(dateTimeInput.date[dateUnit])) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? '000' + event.data
+        : '0' + event.data;
+  } else {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? dateTimeInput.date.year.slice(1, 4) + event.data
+        : dateTimeInput.date[dateUnit][1] + event.data;
+  }
+}
+
+function moreThanMaximumDate(
+  dateUnit: keyof typeof dateTimeInput.date
+) {
+  if (
+    isMoreThanMaximumMonthAndYear(
+      dateTimeInput.date.month,
+      dateTimeInput.date.year
+    )
+  ) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? 'YYYY'
+        : 'MM';
+  } else if (
+    isMoreThanMaximumDays(
+      dateTimeInput.date.day,
+      dateTimeInput.date.month,
+      dateTypeDate.value
+    )
+  ) {
+    dateTimeInput.date.day = 'DD';
+    dateTimeInput.date.month =
+      Number(dateTimeInput.date.month) < 10
+        ? '0' + Number(dateTimeInput.date.month)
+        : dateTimeInput.date.month;
   }
 }
 </script>

@@ -249,7 +249,26 @@ function setDefaultDate() {
   dateTypeDate.value = undefined;
 }
 
-function moreThanMaximumDate(dateUnit: string) {
+function addDateInDateTimeInput(
+  event: InputEvent,
+  dateUnit: keyof typeof dateTimeInput.date
+) {
+  if (isLessThanTen(dateTimeInput.date[dateUnit])) {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? '000' + event.data
+        : '0' + event.data;
+  } else {
+    dateTimeInput.date[dateUnit] =
+      dateTimeInput.isDateUnitYear(dateUnit)
+        ? dateTimeInput.date.year.slice(1, 4) + event.data
+        : dateTimeInput.date[dateUnit][1] + event.data;
+  }
+}
+
+function moreThanMaximumDate(
+  dateUnit: keyof typeof dateTimeInput.date
+) {
   if (
     isMoreThanMaximumMonthAndYear(
       dateTimeInput.date.month,
@@ -272,23 +291,6 @@ function moreThanMaximumDate(dateUnit: string) {
       Number(dateTimeInput.date.month) < 10
         ? '0' + Number(dateTimeInput.date.month)
         : dateTimeInput.date.month;
-  }
-}
-
-function addDateInDateTimeInput(
-  event: InputEvent,
-  dateUnit: string
-) {
-  if (isLessThanTen(dateTimeInput.date[dateUnit])) {
-    dateTimeInput.date[dateUnit] =
-      dateTimeInput.isDateUnitYear(dateUnit)
-        ? '000' + event.data
-        : '0' + event.data;
-  } else {
-    dateTimeInput.date[dateUnit] =
-      dateTimeInput.isDateUnitYear(dateUnit)
-        ? dateTimeInput.date.year.slice(1, 4) + event.data
-        : dateTimeInput.date[dateUnit][1] + event.data;
   }
 }
 </script>
