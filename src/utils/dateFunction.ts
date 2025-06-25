@@ -61,8 +61,19 @@ export function isLessThanMinOrIsMoreThanMax(
   minDate: string,
   maxDate: string
 ): boolean {
-  const minDateTypeDate = new Date(minDate);
-  const maxDateTypeDate = new Date(maxDate);
+  const convertMinDateToDMY = minDate.split('/');
+  const minDateTypeDate = new Date(
+    Number(convertMinDateToDMY[2]),
+    Number(convertMinDateToDMY[1]) - 1,
+    Number(convertMinDateToDMY[0])
+  );
+
+  const convertMaxDateToDMY = maxDate.split('/');
+  const maxDateTypeDate = new Date(
+    Number(convertMaxDateToDMY[2]),
+    Number(convertMaxDateToDMY[1]) - 1,
+    Number(convertMaxDateToDMY[0])
+  );
   return (
     dateInput < minDateTypeDate ||
     dateInput > maxDateTypeDate

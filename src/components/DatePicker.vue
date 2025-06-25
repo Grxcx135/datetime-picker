@@ -73,7 +73,9 @@ import {
   isMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
   isLessThanTen,
-  setDefaultByDateUnit
+  setDefaultByDateUnit,
+  inputDateByProp,
+  isLessThanMinOrIsMoreThanMax
 } from '@/utils/dateFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
@@ -117,15 +119,11 @@ onMounted(() => {
     const dateFromInput = props.defaultDate.split('/');
     Object.keys(dateTimeInput.date).forEach(
       (key, index) => {
-        dateTimeInput.date[key] =
-          Number(dateFromInput[index]) > 10 &&
-          key !== 'year'
-            ? dateFromInput[index]
-            : key === 'year'
-              ? '0'.repeat(
-                  4 - dateFromInput[index].length
-                ) + dateFromInput[index]
-              : '0' + dateFromInput[index];
+        dateTimeInput.date[key] = inputDateByProp(
+          dateFromInput,
+          index,
+          key
+        );
       }
     );
     convertToDate();
@@ -145,11 +143,12 @@ function convertToDate() {
     props.space
   );
   if (dateFormatted.value !== 'Invalid Date') {
-    const minDateTypeDate = new Date(props.minDate ?? '');
-    const maxDateTypeDate = new Date(props.maxDate ?? '');
     if (
-      dateStringConvertToDate < minDateTypeDate ||
-      dateStringConvertToDate > maxDateTypeDate
+      isLessThanMinOrIsMoreThanMax(
+        dateTypeDate.value,
+        props.minDate,
+        props.maxDate
+      )
     ) {
       setDefaultDate();
     }

@@ -9,7 +9,7 @@
           color="stageDark4"
           dateForm="/"
           minDate="2/3/2532"
-          maxDate="2/3/2533"
+          maxDate="2/3/2532"
           clearable
         />
         <span>Date is {{ datePicker }}</span>

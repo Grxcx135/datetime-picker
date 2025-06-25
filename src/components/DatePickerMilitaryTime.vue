@@ -125,27 +125,27 @@ const dateTimeInput = reactive(
 
 onMounted(() => {
   if (props.defaultDate) {
-    const dateFormInput = props.defaultDate.split('/');
+    const dateFromInput = props.defaultDate.split('/');
     const defaultDateFromProps = new Date(
-      Number(dateFormInput[2]),
-      Number(dateFormInput[1]) - 1,
-      Number(dateFormInput[0])
+      Number(dateFromInput[2]),
+      Number(dateFromInput[1]) - 1,
+      Number(dateFromInput[0])
     );
     if (
       !isMoreThanMaximumMonthAndYear(
-        dateFormInput[1],
-        dateFormInput[2]
+        dateFromInput[1],
+        dateFromInput[2]
       ) &&
       !isMoreThanMaximumDays(
-        dateFormInput[0],
-        dateFormInput[1],
+        dateFromInput[0],
+        dateFromInput[1],
         defaultDateFromProps
       )
     ) {
       Object.keys(dateTimeInput.date).forEach(
         (key, index) => {
           dateTimeInput.date[key] = inputDateByProp(
-            dateFormInput,
+            dateFromInput,
             index,
             key
           );
