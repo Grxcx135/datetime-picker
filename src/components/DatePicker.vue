@@ -1,9 +1,8 @@
 <template>
   <v-container :fluid="true" class="pa-0">
     <v-card
-      v-model="dateFormatted"
       :variant="props.variantType"
-      :width="props.width"
+      :width="props.fullWidth ? '100%' : props.width"
       :color="props.color"
       :height="props.height"
       :position="props.position"
@@ -14,7 +13,7 @@
     >
       <v-row>
         <v-col
-          :cols="props.clearable ? '8' : '7'"
+          cols="auto"
           class="pa-2 d-flex flex-row pt-0 pr-0"
         >
           <v-col cols="3" class="pa-0"
@@ -58,7 +57,7 @@
           v-if="props.clearable && !disabled && !readonly"
           icon="$clearable"
           class="pt-0 pb-2 pr-2"
-          @click="setDefaultDate()"
+          @click="handleClickClearable()"
         ></v-icon>
       </div>
     </v-card>
@@ -78,7 +77,10 @@ import {
 } from '@/utils/dateFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
-const emit = defineEmits(['update:dateInput']);
+const emit = defineEmits([
+  'update:dateInput',
+  'update:clickClearable'
+]);
 
 const props = withDefaults(
   defineProps<dateTimeProps>(),
@@ -94,6 +96,11 @@ const dateTimeInput = reactive(
   })
 );
 
+function handleClickClearable() {
+  setDefaultDate();
+  emit('update:clickClearable', true);
+}
+
 function setDefaultDate() {
   const defaultDateTime = new dateTime({
     date: { day: 'DD', month: 'MM', year: 'YYYY' },
@@ -107,18 +114,18 @@ function setDefaultDate() {
 
 onMounted(() => {
   if (props.defaultDate) {
-    const dateFormInput = props.defaultDate.split('/');
+    const dateFromInput = props.defaultDate.split('/');
     Object.keys(dateTimeInput.date).forEach(
       (key, index) => {
         dateTimeInput.date[key] =
-          Number(dateFormInput[index]) > 10 &&
+          Number(dateFromInput[index]) > 10 &&
           key !== 'year'
-            ? dateFormInput[index]
+            ? dateFromInput[index]
             : key === 'year'
               ? '0'.repeat(
-                  4 - dateFormInput[index].length
-                ) + dateFormInput[index]
-              : '0' + dateFormInput[index];
+                  4 - dateFromInput[index].length
+                ) + dateFromInput[index]
+              : '0' + dateFromInput[index];
       }
     );
     convertToDate();

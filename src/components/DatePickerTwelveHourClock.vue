@@ -87,7 +87,7 @@
           v-if="props.clearable && !disabled && !readonly"
           icon="$clearable"
           class="pt-0 pb-2 px-1"
-          @click="setDefaultDate()"
+          @click="setDefaultDateTime()"
         ></v-icon>
       </div>
     </v-card>
@@ -161,7 +161,7 @@ function convertToDate() {
       dateStringConvertToDate < minDateTypeDate ||
       dateStringConvertToDate > maxDateTypeDate
     ) {
-      setDefaultDate();
+      setDefaultDateTime();
     } else {
       emit(
         'update:twelveHourInput',
@@ -209,10 +209,7 @@ function setTime(
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
       dateTimeInput.time[timeUnit] =
-        event.target._value.slice(
-          0,
-          event.target._value.length - 1
-        );
+        setDefaultByTimeUnit(timeUnit);
     } else {
       if (
         isMoreThanMaximumTwelveTime(
@@ -290,7 +287,7 @@ function moreThanMaximumDate(
   }
 }
 
-function setDefaultDate() {
+function setDefaultDateTime() {
   const defaultDateTime = new dateTime({
     date: { day: 'DD', month: 'MM', year: 'YYYY' },
     time: { hour: 'HH', minute: 'mm', meridiemType: 'aa' }

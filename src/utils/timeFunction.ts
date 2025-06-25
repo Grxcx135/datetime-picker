@@ -38,3 +38,12 @@ export function calculateHour(
       ? 0
       : Number(hour);
 }
+
+export function inputTimeByProp(
+  timeFromInput: string[],
+  index: number
+) {
+  return Number(timeFromInput[index]) > 10
+    ? timeFromInput[index]
+    : '0' + timeFromInput[index];
+}

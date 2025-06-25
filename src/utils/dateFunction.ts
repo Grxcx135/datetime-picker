@@ -42,3 +42,29 @@ export function setDefaultByDateUnit(
       ? 'MM'
       : 'YYYY';
 }
+
+export function inputDateByProp(
+  dateFormInput: string[],
+  index: number,
+  key: string
+): string {
+  return Number(dateFormInput[index]) > 10 && key !== 'year'
+    ? dateFormInput[index]
+    : key === 'year'
+      ? '0'.repeat(4 - dateFormInput[index].length) +
+        dateFormInput[index]
+      : '0' + dateFormInput[index];
+}
+
+export function isLessThanMinOrIsMoreThanMax(
+  dateInput: Date,
+  minDate: string,
+  maxDate: string
+): boolean {
+  const minDateTypeDate = new Date(minDate);
+  const maxDateTypeDate = new Date(maxDate);
+  return (
+    dateInput < minDateTypeDate ||
+    dateInput > maxDateTypeDate
+  );
+}

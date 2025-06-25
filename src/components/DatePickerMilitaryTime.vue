@@ -2,7 +2,7 @@
   <v-container :fluid="true" class="pa-0">
     <v-card
       :variant="props.variantType"
-      :width="props.width"
+      :width="props.fullWidth ? '100%' : props.width"
       :color="props.color"
       :height="props.height"
       :position="props.position"
@@ -13,7 +13,7 @@
     >
       <v-row>
         <v-col
-          cols="7"
+          :cols="props.fullWidth ? 'auto' : '7'"
           class="pa-2 d-flex flex-row pt-0 pr-0"
         >
           <v-col cols="3" class="pa-0"
@@ -51,7 +51,10 @@
             ></v-text-field
           ></v-col>
         </v-col>
-        <v-col cols="4" class="pl-2 pa-0 d-flex flex-row">
+        <v-col
+          :cols="props.fullWidth ? 'auto' : '4'"
+          class="pl-2 pa-0 d-flex flex-row"
+        >
           <v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
@@ -74,7 +77,7 @@
           v-if="props.clearable && !disabled && !readonly"
           icon="$clearable"
           class="pt-0 pb-2 px-1"
-          @click="setDefaultDate()"
+          @click="handleClickClearable()"
         ></v-icon>
       </div>
     </v-card>
@@ -90,11 +93,14 @@ import {
   isMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
   isLessThanTen,
-  setDefaultByDateUnit
+  setDefaultByDateUnit,
+  inputDateByProp,
+  isLessThanMinOrIsMoreThanMax
 } from '@/utils/dateFunction';
 import {
   isMoreThanMaximumTime,
-  setDefaultByTimeUnit
+  setDefaultByTimeUnit,
+  inputTimeByProp
 } from '@/utils/timeFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
@@ -105,7 +111,10 @@ const props = withDefaults(defineProps<dateTimeProps>(), {
 });
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
-const emit = defineEmits(['update:militaryInput']);
+const emit = defineEmits([
+  'update:militaryInput',
+  'update:clickClearable'
+]);
 
 const dateTimeInput = reactive(
   new dateTime({
@@ -117,22 +126,58 @@ const dateTimeInput = reactive(
 onMounted(() => {
   if (props.defaultDate) {
     const dateFormInput = props.defaultDate.split('/');
-    Object.keys(dateTimeInput.date).forEach(
-      (key, index) => {
-        dateTimeInput.date[key] =
-          Number(dateFormInput[index]) > 10 &&
-          key !== 'year'
-            ? dateFormInput[index]
-            : key === 'year'
-              ? '0'.repeat(
-                  4 - dateFormInput[index].length
-                ) + dateFormInput[index]
-              : '0' + dateFormInput[index];
-      }
+    const defaultDateFromProps = new Date(
+      Number(dateFormInput[2]),
+      Number(dateFormInput[1]) - 1,
+      Number(dateFormInput[0])
     );
-    convertToDate();
+    if (
+      !isMoreThanMaximumMonthAndYear(
+        dateFormInput[1],
+        dateFormInput[2]
+      ) &&
+      !isMoreThanMaximumDays(
+        dateFormInput[0],
+        dateFormInput[1],
+        defaultDateFromProps
+      )
+    ) {
+      Object.keys(dateTimeInput.date).forEach(
+        (key, index) => {
+          dateTimeInput.date[key] = inputDateByProp(
+            dateFormInput,
+            index,
+            key
+          );
+        }
+      );
+    }
   }
+  if (props.defaultTime) {
+    const timeFromInput = props.defaultTime.split(':');
+    if (
+      !isMoreThanMaximumTime(
+        timeFromInput[0],
+        timeFromInput[1]
+      )
+    ) {
+      Object.keys(dateTimeInput.time).forEach(
+        (key, index) => {
+          dateTimeInput.time[key] = inputTimeByProp(
+            timeFromInput,
+            index
+          );
+        }
+      );
+    }
+  }
+  convertToDate();
 });
+
+function handleClickClearable() {
+  setDefaultDate();
+  emit('update:clickClearable', true);
+}
 
 function convertToDate() {
   const dateStringConvertToDate = new Date(
@@ -148,16 +193,17 @@ function convertToDate() {
   );
   dateTypeDate.value = dateStringConvertToDate;
   dateFormatted.value = formatDateWithTime(
-    dateStringConvertToDate,
+    dateTypeDate.value,
     props.dateForm,
     props.space
   );
   if (dateFormatted.value !== 'Invalid Date') {
-    const minDateTypeDate = new Date(props.minDate ?? '');
-    const maxDateTypeDate = new Date(props.maxDate ?? '');
     if (
-      dateStringConvertToDate < minDateTypeDate ||
-      dateStringConvertToDate > maxDateTypeDate
+      isLessThanMinOrIsMoreThanMax(
+        dateTypeDate.value,
+        props.minDate,
+        props.maxDate
+      )
     ) {
       setDefaultDate();
     }
@@ -203,10 +249,7 @@ function setTime(
   if (event.inputType === 'insertText') {
     if (isNaN(Number(event.data))) {
       dateTimeInput.time[timeUnit] =
-        event.target._value.slice(
-          0,
-          event.target._value.length - 1
-        );
+        setDefaultByTimeUnit(timeUnit);
     } else {
       if (
         isMoreThanMaximumTime(

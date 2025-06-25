@@ -27,9 +27,9 @@ export const rounded = [
   'circle'
 ] as const;
 export type roundedType = (typeof rounded)[number];
-
 export interface dateTimeProps {
   defaultDate?: string;
+
   variantType?: variantType;
   position?: positionType;
   width?: string | number;
@@ -44,6 +44,13 @@ export interface dateTimeProps {
   readonly?: boolean;
   borderRadius?: roundedType;
   elevationNumber?: number | string;
+  fullWidth?: boolean;
+  clickClear?: boolean;
+  updateValue?: boolean;
+  defaultTime?: string;
+  //TODO
+  maxTime?: string;
+  minTime?: string;
 }
 
 export const defaultDateTimeProps: Required<
@@ -59,6 +66,12 @@ export const defaultDateTimeProps: Required<
     | 'readonly'
     | 'borderRadius'
     | 'elevationNumber'
+    | 'updateValue'
+    | 'clickClear'
+    | 'maxDate'
+    | 'minDate'
+    | 'maxTime'
+    | 'minTime'
   >
 > = {
   variantType: 'outlined',
@@ -70,5 +83,11 @@ export const defaultDateTimeProps: Required<
   space: 0,
   readonly: false,
   borderRadius: 'md',
-  elevationNumber: 0
+  elevationNumber: 0,
+  updateValue: false,
+  clickClear: false,
+  maxDate: '',
+  minDate: '',
+  maxTime: '',
+  minTime: ''
 };

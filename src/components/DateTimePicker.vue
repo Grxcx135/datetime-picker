@@ -17,13 +17,18 @@
       :readonly="props.readonly"
       :borderRadius="props.borderRadius"
       :elevationNumber="props.elevationNumber"
-      @update:dateInput="handleEmit($event)"
+      :fullWidth="props.fullWidth"
+      @update:dateInput="handleEmitData($event)"
+      @update:click-clearable="
+        emit('clickClearable', $event)
+      "
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
       :variantType="props.variantType"
       :width="props.width"
       :defaultDate="props.defaultDate"
+      :defaultTime="props.defaultTime"
       :clearable="props.clearable"
       :color="props.color"
       :disabled="props.disabled"
@@ -33,10 +38,16 @@
       :space="props.space"
       :minDate="props.minDate"
       :maxDate="props.maxDate"
+      :maxTime="props.maxTime"
+      :minTime="props.minTime"
       :readonly="props.readonly"
       :borderRadius="props.borderRadius"
       :elevationNumber="props.elevationNumber"
-      @update:militaryInput="handleEmit($event)"
+      :fullWidth="props.fullWidth"
+      @update:militaryInput="handleEmitData($event)"
+      @update:click-clearable="
+        emit('clickClearable', $event)
+      "
     />
     <DatePickerTwelveHourClock
       v-else-if="props.timeType === 'twelveHour'"
@@ -55,13 +66,12 @@
       :readonly="props.readonly"
       :borderRadius="props.borderRadius"
       :elevationNumber="props.elevationNumber"
-      @update:twelveHourInput="handleEmit($event)"
+      @update:twelveHourInput="handleEmitData($event)"
     />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
 import DatePickerMilitaryTime from './DatePickerMilitaryTime.vue';
 import DatePickerTwelveHourClock from './DatePickerTwelveHourClock.vue';
 import DatePicker from './DatePicker.vue';
@@ -69,7 +79,11 @@ import type { positionType } from './DateTimeProps';
 import type { variantType as variant } from './DateTimeProps';
 import type { roundedType } from './DateTimeProps';
 
-const emit = defineEmits(['update:dateInput']);
+const emit = defineEmits([
+  'update:dateInput',
+  'clickClearable',
+  'updateValue'
+]);
 
 const props = defineProps<{
   timeType: 'None' | 'militaryTime' | 'twelveHour';
@@ -77,6 +91,7 @@ const props = defineProps<{
   position?: positionType;
   width?: string;
   defaultDate?: string;
+  defaultTime?: string;
   clearable?: true;
   color?: string;
   disabled?: true;
@@ -88,11 +103,14 @@ const props = defineProps<{
   readonly?: true;
   borderRadius?: roundedType;
   elevationNumber?: number | string;
+  fullWidth?: true;
+  maxTime?: string;
+  minTime?: string;
 }>();
 
-function handleEmit(event: InputEvent) {
-  console.log(event);
+function handleEmitData(event: InputEvent) {
   emit('update:dateInput', event);
+  emit('updateValue', true);
 }
 </script>
 
