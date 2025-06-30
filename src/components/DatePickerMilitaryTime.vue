@@ -100,7 +100,8 @@ import {
 import {
   isMoreThanMaximumTime,
   setDefaultByTimeUnit,
-  inputTimeByProp
+  inputTimeByProp,
+  isLessThanMinTimeOrMoreThanMaxTime
 } from '@/utils/timeFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
@@ -179,6 +180,7 @@ function handleClickClearable() {
   emit('update:clickClearable', true);
 }
 
+//TODO : separate check max min date to another function
 function convertToDate() {
   const dateStringConvertToDate = new Date(
     Number(dateTimeInput.date.year),
@@ -236,9 +238,11 @@ function setDate(
     String(Number(dateTimeInput.date.year)).length === 4
   ) {
     convertToDate();
+    //maybe move check max min date in under convertToDate
   }
 }
 
+//TODO : add check max min time
 function setTime(
   event: InputEvent,
   timeUnit: keyof typeof dateTimeInput.time
@@ -258,9 +262,8 @@ function setTime(
         )
       ) {
         if (dateTimeInput.time[timeUnit]) {
-          dateTimeInput.time[timeUnit] = dateTimeInput.time[
-            timeUnit
-          ].slice(0, 2);
+          dateTimeInput.time[timeUnit] =
+            setDefaultByTimeUnit(timeUnit);
         }
       } else if (
         isLessThanTen(dateTimeInput.time[timeUnit])
@@ -278,6 +281,17 @@ function setTime(
       dateTimeInput.time[timeUnit] =
         setDefaultByTimeUnit(timeUnit);
     }
+  }
+  if (
+    isLessThanMinTimeOrMoreThanMaxTime(
+      dateTimeInput.time.hour,
+      dateTimeInput.time.minute,
+      props.minTime,
+      props.maxTime
+    )
+  ) {
+    dateTimeInput.time.hour = 'HH';
+    dateTimeInput.time.minute = 'mm';
   }
   convertToDate();
 }

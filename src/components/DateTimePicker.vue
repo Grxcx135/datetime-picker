@@ -19,9 +19,7 @@
       :elevationNumber="props.elevationNumber"
       :fullWidth="props.fullWidth"
       @update:dateInput="handleEmitData($event)"
-      @update:click-clearable="
-        emit('clickClearable', $event)
-      "
+      @update:click-clearable="emit('clickClearable', $event)"
     />
     <DatePickerMilitaryTime
       v-else-if="props.timeType === 'militaryTime'"
@@ -45,9 +43,7 @@
       :elevationNumber="props.elevationNumber"
       :fullWidth="props.fullWidth"
       @update:militaryInput="handleEmitData($event)"
-      @update:click-clearable="
-        emit('clickClearable', $event)
-      "
+      @update:click-clearable="emit('clickClearable', $event)"
     />
     <DatePickerTwelveHourClock
       v-else-if="props.timeType === 'twelveHour'"
@@ -79,11 +75,7 @@ import type { positionType } from './DateTimeProps';
 import type { variantType as variant } from './DateTimeProps';
 import type { roundedType } from './DateTimeProps';
 
-const emit = defineEmits([
-  'update:dateInput',
-  'clickClearable',
-  'updateValue'
-]);
+const emit = defineEmits(['update:dateInput', 'clickClearable', 'updateValue']);
 
 const props = defineProps<{
   timeType: 'None' | 'militaryTime' | 'twelveHour';

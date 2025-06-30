@@ -24,7 +24,6 @@
           color="red"
           minDate="2/3/2532"
           maxDate="2/3/2533"
-          default-time="7:3"
           clearable
         />
         <span>Date is {{ dateTimeMilitaryPicker }}</span>
