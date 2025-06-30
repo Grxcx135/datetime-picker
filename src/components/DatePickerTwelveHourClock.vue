@@ -2,7 +2,7 @@
   <v-container :fluid="true" class="pa-0">
     <v-card
       :variant="props.variantType"
-      :width="props.width"
+      :width="props.fullWidth ? '100%' : props.width"
       :color="props.color"
       :height="props.height"
       :position="props.position"
@@ -11,9 +11,9 @@
       style="display: flex; align-items: center"
       class="pa-2 pb-0"
     >
-      <v-row class="">
+      <v-row>
         <v-col
-          cols="7"
+          :cols="props.fullWidth ? 'auto' : '7'"
           class="pa-2 d-flex flex-row pt-0 pr-0"
         >
           <v-col cols="3" class="pa-0"
@@ -51,7 +51,10 @@
             ></v-text-field
           ></v-col>
         </v-col>
-        <v-col cols="" class="pa-0 d-flex flex-row">
+        <v-col
+          :cols="props.fullWidth ? 'auto' : ''"
+          class="pa-0 d-flex flex-row"
+        >
           <v-col cols="3" class="pa-0"
             ><v-text-field
               v-model="dateTimeInput.time.hour"
@@ -118,8 +121,7 @@ import {
 
 const emit = defineEmits(['update:twelveHourInput']);
 const props = withDefaults(defineProps<dateTimeProps>(), {
-  ...defaultDateTimeProps,
-  width: '250px'
+  ...defaultDateTimeProps
 });
 
 dayjs.extend(isLeapYear);

@@ -53,7 +53,7 @@
         </v-col>
         <v-col
           :cols="props.fullWidth ? 'auto' : '4'"
-          class="pl-2 pa-0 d-flex flex-row"
+          class="pa-0 d-flex flex-row"
         >
           <v-text-field
             v-model="dateTimeInput.time.hour"
@@ -107,8 +107,7 @@ import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
 
 const props = withDefaults(defineProps<dateTimeProps>(), {
-  ...defaultDateTimeProps,
-  width: '230px'
+  ...defaultDateTimeProps
 });
 const dateTypeDate = ref<Date | undefined>();
 const dateFormatted = ref<string | undefined>();
