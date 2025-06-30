@@ -35,6 +35,8 @@
           v-model:date-input="dateTimeTwelvePicker"
           timeType="twelveHour"
           clearable
+          default-date="2/3/1234"
+          default-time="19:23"
         />
         <span>Date is {{ dateTimeTwelvePicker }}</span>
       </v-col>

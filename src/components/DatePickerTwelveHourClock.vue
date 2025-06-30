@@ -65,7 +65,7 @@
             ></v-text-field
           ></v-col>
           <span class="size-text">:</span>
-          <v-col cols="4" class="pa-0"
+          <v-col cols="" class="pa-0"
             ><v-text-field
               v-model="dateTimeInput.time.minute"
               label=""
@@ -98,7 +98,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed, reactive } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import dayjs from 'dayjs';
 import isLeapYear from 'dayjs/plugin/isLeapYear';
 import { isNaN } from 'lodash';
@@ -110,13 +110,16 @@ import {
   isMoreThanMaximumMonthAndYear,
   isMoreThanMaximumDays,
   isLessThanTen,
-  setDefaultByDateUnit
+  setDefaultByDateUnit,
+  inputDateByProp
 } from '@/utils/dateFunction';
 import {
   isMoreThanMaximumTwelveTime,
   setMeridiemType as selectMeridiemType,
   setDefaultByTimeUnit,
-  calculateHour
+  calculateHour,
+  isMoreThanMaximumTime,
+  inputTimeByProp
 } from '@/utils/timeFunction';
 
 const emit = defineEmits(['update:twelveHourInput']);
@@ -134,6 +137,54 @@ const dateTimeInput = reactive(
     time: { hour: 'HH', minute: 'mm', meridiemType: 'aa' }
   })
 );
+
+onMounted(() => {
+  if (props.defaultDate) {
+    const dateFromInput = props.defaultDate.split('/');
+    const defaultDateFromProps = new Date(
+      Number(dateFromInput[2]),
+      Number(dateFromInput[1]) - 1,
+      Number(dateFromInput[0])
+    );
+    if (
+      !isMoreThanMaximumMonthAndYear(
+        dateFromInput[1],
+        dateFromInput[2]
+      ) &&
+      !isMoreThanMaximumDays(
+        dateFromInput[0],
+        dateFromInput[1],
+        defaultDateFromProps
+      )
+    ) {
+      Object.keys(dateTimeInput.date).forEach(
+        (key, index) => {
+          dateTimeInput.date[key] = inputDateByProp(
+            dateFromInput,
+            index,
+            key
+          );
+        }
+      );
+    }
+  }
+  if (props.defaultTime) {
+    const timeFromInput = props.defaultTime.split(':');
+    //TODO : แปลงเวลายังไม่เสร็จ ตอนนี้ตัดเวลาเลยแล้ววตอนเข้าconvertToDate จะแตก อาจปรับฟังชั่นให้pushแค่ mediriumType
+    const twelveTime =
+      convertMilitaryTimeToTwelveHourTime(timeFromInput);
+    console.log(twelveTime);
+    Object.keys(dateTimeInput.time).forEach(
+      (key, index) => {
+        dateTimeInput.time[key] = inputTimeByProp(
+          timeFromInput,
+          index
+        );
+      }
+    );
+  }
+  convertToDate();
+});
 
 function convertToDate() {
   const dateStringConvertToDate = new Date(
@@ -320,6 +371,16 @@ function setMeridiemType(event: InputEvent) {
     dateTimeInput.time.hour = 'HH';
   }
   convertToDate();
+}
+
+function convertMilitaryTimeToTwelveHourTime(
+  militaryTime: string[]
+) {
+  const hour = Number(militaryTime[0]);
+  militaryTime.push(hour < 12 ? 'PM' : 'AM');
+  militaryTime[0] =
+    hour > 12 ? String(hour - 12) : String(hour);
+  return militaryTime;
 }
 </script>
 

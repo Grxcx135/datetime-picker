@@ -43,9 +43,11 @@ export function inputTimeByProp(
   timeFromInput: string[],
   index: number
 ) {
-  return Number(timeFromInput[index]) > 10
-    ? timeFromInput[index]
-    : '0' + timeFromInput[index];
+  return !isNaN(Number(timeFromInput[index]))
+    ? Number(timeFromInput[index]) > 10
+      ? timeFromInput[index]
+      : '0' + timeFromInput[index]
+    : timeFromInput[index];
 }
 
 export function isLessThanMinTimeOrMoreThanMaxTime(

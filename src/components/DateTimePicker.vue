@@ -55,6 +55,7 @@
       :width="props.width"
       :fullWidth="props.fullWidth"
       :defaultDate="props.defaultDate"
+      :defaultTime="props.defaultTime"
       :clearable="props.clearable"
       :color="props.color"
       :disabled="props.disabled"
