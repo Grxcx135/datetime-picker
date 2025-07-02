@@ -75,7 +75,7 @@ export const defaultDateTimeProps: Required<
   >
 > = {
   variantType: 'outlined',
-  width: '260px',
+  width: '100%',
   height: '30px',
   clearable: false,
   disabled: false,

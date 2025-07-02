@@ -154,11 +154,17 @@ onMounted(() => {
     }
   }
   if (props.defaultTime) {
-    const timeFromInput = props.defaultTime.split(':');
+    const timeFromInput = props.defaultTime.split('.');
     if (
       !isMoreThanMaximumTime(
         timeFromInput[0],
         timeFromInput[1]
+      ) &&
+      !isLessThanMinTimeOrMoreThanMaxTime(
+        timeFromInput[0],
+        timeFromInput[1],
+        props.minTime,
+        props.maxTime
       )
     ) {
       Object.keys(dateTimeInput.time).forEach(
@@ -241,7 +247,6 @@ function setDate(
   }
 }
 
-//TODO : add check max min time
 function setTime(
   event: InputEvent,
   timeUnit: keyof typeof dateTimeInput.time

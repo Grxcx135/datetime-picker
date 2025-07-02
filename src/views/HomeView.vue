@@ -24,19 +24,23 @@
           color="red"
           minDate="2/3/2532"
           maxDate="2/3/2533"
+          default-time="17.40"
+          minTime="8.30"
+          maxTime="17.30"
           clearable
         />
         <span>Date is {{ dateTimeMilitaryPicker }}</span>
       </v-col>
     </v-row>
     <v-row>
-      <v-col>
+      <v-col cols="auto">
         <DateTimePicker
           v-model:date-input="dateTimeTwelvePicker"
           timeType="twelveHour"
           clearable
           default-date="2/3/1234"
-          default-time="19:23"
+          minTime="8.30"
+          maxTime="17.30"
         />
         <span>Date is {{ dateTimeTwelvePicker }}</span>
       </v-col>

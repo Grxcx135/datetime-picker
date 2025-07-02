@@ -56,6 +56,11 @@ export function isLessThanMinTimeOrMoreThanMaxTime(
   minTime: string,
   maxTime: string
 ) {
+  console.log('TODO : bug cal ไวเกิน');
+  if (hour === 'HH' || minute === 'mm') {
+    console.log('in if', hour, minute);
+    return false;
+  }
   const inputTime = Number(hour) + Number(minute) * 0.01;
   return maxTime
     ? inputTime < Number(minTime) ||

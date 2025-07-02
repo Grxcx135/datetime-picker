@@ -1,100 +1,91 @@
 <template>
-  <v-container :fluid="true" class="pa-0">
-    <v-card
-      :variant="props.variantType"
-      :width="props.fullWidth ? '100%' : props.width"
-      :color="props.color"
-      :height="props.height"
-      :position="props.position"
-      :rounded="props.borderRadius"
-      :elevation="props.elevationNumber"
-      style="display: flex; align-items: center"
-      class="pa-2 pb-0"
-    >
-      <v-row>
-        <v-col
-          :cols="props.fullWidth ? 'auto' : '7'"
-          class="pa-2 d-flex flex-row pt-0 pr-0"
-        >
-          <v-col cols="3" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.day"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'day')"
-            >
-            </v-text-field></v-col
-          ><span class="size-text">/</span>
-          <v-col cols="3" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.month"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'month')"
-            ></v-text-field></v-col
-          ><span class="size-text">/</span>
-          <v-col cols="" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.year"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'year')"
-            ></v-text-field
-          ></v-col>
-        </v-col>
-        <v-col
-          :cols="props.fullWidth ? 'auto' : ''"
-          class="pa-0 d-flex flex-row"
-        >
-          <v-col cols="3" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.time.hour"
-              label=""
-              variant="plain"
-              hide-details
-              @input="setTime($event, 'hour')"
-            ></v-text-field
-          ></v-col>
-          <span class="size-text">:</span>
-          <v-col cols="" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.time.minute"
-              label=""
-              variant="plain"
-              hide-details
-              @input="setTime($event, 'minute')"
-            ></v-text-field
-          ></v-col>
-          <v-col cols="4" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.time.meridiemType"
-              label=""
-              variant="plain"
-              hide-details
-              @input="setMeridiemType($event)"
-            ></v-text-field
-          ></v-col>
-        </v-col>
-      </v-row>
-      <div>
-        <v-icon
-          v-if="props.clearable && !disabled && !readonly"
-          icon="$clearable"
-          class="pt-0 pb-2 px-1"
-          @click="setDefaultDateTime()"
-        ></v-icon>
-      </div>
-    </v-card>
-  </v-container>
+  <v-card
+    :variant="props.variantType"
+    :width="props.width"
+    :color="props.color"
+    :position="props.position"
+    :rounded="props.borderRadius"
+    :elevation="props.elevationNumber"
+    style="display: flex; align-items: center"
+    class="px-2"
+  >
+    <div class="d-flex">
+      <v-col class="pa-0 d-flex flex-row">
+        <v-col cols="3" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.day"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'day')"
+          >
+          </v-text-field></v-col
+        ><span class="size-text">/</span>
+        <v-col cols="3" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.month"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'month')"
+          ></v-text-field></v-col
+        ><span class="size-text">/</span>
+        <v-col cols="5" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.year"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'year')"
+          ></v-text-field
+        ></v-col>
+      </v-col>
+      <v-col class="pa-0 d-flex flex-row">
+        <v-col class="pa-0 pl-2"
+          ><v-text-field
+            v-model="dateTimeInput.time.hour"
+            label=""
+            variant="plain"
+            hide-details
+            @input="setTime($event, 'hour')"
+          ></v-text-field
+        ></v-col>
+        <span class="size-text">:</span>
+        <v-col class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.time.minute"
+            label=""
+            variant="plain"
+            hide-details
+            @input="setTime($event, 'minute')"
+          ></v-text-field
+        ></v-col>
+        <v-col class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.time.meridiemType"
+            label=""
+            variant="plain"
+            hide-details
+            @input="setMeridiemType($event)"
+          ></v-text-field
+        ></v-col>
+      </v-col>
+    </div>
+    <div>
+      <v-icon
+        v-if="props.clearable && !disabled && !readonly"
+        icon="$clearable"
+        size="xl"
+        @click="setDefaultDateTime()"
+      ></v-icon>
+    </div>
+  </v-card>
 </template>
 
 <script setup lang="ts">
@@ -290,6 +281,15 @@ function setTime(
         setDefaultByTimeUnit(timeUnit);
     }
   }
+  if (isLessThanMinOrMoreThanMaxTime()) {
+    dateTimeInput.time.hour = 'HH';
+    dateTimeInput.time.minute = 'mm';
+    dateTimeInput.time.meridiemType = 'aa';
+    // const defaultTime = {
+    //   time: { hour: 'HH', minute: 'mm', meridiemType: 'aa' }
+    // };
+    // Object.assign(dateTimeInput.time, defaultTime);
+  }
   convertToDate();
 }
 
@@ -368,6 +368,11 @@ function setMeridiemType(event: InputEvent) {
   ) {
     dateTimeInput.time.hour = 'HH';
   }
+  if (isLessThanMinOrMoreThanMaxTime()) {
+    dateTimeInput.time.hour = 'HH';
+    dateTimeInput.time.minute = 'mm';
+    dateTimeInput.time.meridiemType = 'aa';
+  }
   convertToDate();
 }
 
@@ -377,9 +382,28 @@ function convertMilitaryTimeToTwelveHourTime(
   const hour = Number(militaryTime[0]);
   militaryTime.push(hour >= 12 ? 'PM' : 'AM');
   militaryTime[0] =
-    hour >= 12 ? String(hour - 12) : String(hour);
+    hour > 12 ? String(hour - 12) : String(hour);
 
   return militaryTime;
+}
+
+function isLessThanMinOrMoreThanMaxTime() {
+  if (
+    dateTimeInput.time.hour === 'HH' ||
+    dateTimeInput.time.minute === 'mm' ||
+    dateTimeInput.time.meridiemType === 'aa'
+  ) {
+    return false;
+  }
+  const inputTime =
+    (dateTimeInput.time.meridiemType === 'PM'
+      ? Number(dateTimeInput.time.hour) + 12
+      : Number(dateTimeInput.time.hour)) +
+    Number(dateTimeInput.time.minute) * 0.01;
+  return props.maxTime
+    ? inputTime < Number(props.minTime) ||
+        inputTime > Number(props.maxTime)
+    : false;
 }
 </script>
 

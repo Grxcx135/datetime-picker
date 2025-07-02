@@ -120,7 +120,8 @@ const vuetify = createVuetify({
       variant: 'outlined',
       density: 'compact',
       rounded: 'lg',
-      hideDetails: 'auto'
+      hideDetails: 'auto',
+      class: 'pa-0 pt-0'
     }
   }
 });
