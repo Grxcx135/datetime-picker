@@ -170,14 +170,12 @@ onMounted(() => {
   }
   if (props.defaultTime) {
     const timeFromInput = props.defaultTime.split(':');
-    //TODO : แปลงเวลายังไม่เสร็จ ตอนนี้ตัดเวลาเลยแล้ววตอนเข้าconvertToDate จะแตก อาจปรับฟังชั่นให้pushแค่ mediriumType
     const twelveTime =
       convertMilitaryTimeToTwelveHourTime(timeFromInput);
-    console.log(twelveTime);
     Object.keys(dateTimeInput.time).forEach(
       (key, index) => {
         dateTimeInput.time[key] = inputTimeByProp(
-          timeFromInput,
+          twelveTime,
           index
         );
       }
@@ -377,9 +375,10 @@ function convertMilitaryTimeToTwelveHourTime(
   militaryTime: string[]
 ) {
   const hour = Number(militaryTime[0]);
-  militaryTime.push(hour < 12 ? 'PM' : 'AM');
+  militaryTime.push(hour >= 12 ? 'PM' : 'AM');
   militaryTime[0] =
-    hour > 12 ? String(hour - 12) : String(hour);
+    hour >= 12 ? String(hour - 12) : String(hour);
+
   return militaryTime;
 }
 </script>
