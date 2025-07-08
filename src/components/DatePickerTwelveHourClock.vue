@@ -3,6 +3,7 @@
     :variant="props.variantType"
     :width="props.width"
     :color="props.color"
+    :height="props.height"
     :position="props.position"
     :rounded="props.borderRadius"
     :elevation="props.elevationNumber"
@@ -77,14 +78,14 @@
         ></v-col>
       </v-col>
     </div>
-    <div>
+    <v-row justify="end" class="mr-1">
       <v-icon
         v-if="props.clearable && !disabled && !readonly"
         icon="$clearable"
         size="xl"
         @click="setDefaultDateTime()"
       ></v-icon>
-    </div>
+    </v-row>
   </v-card>
 </template>
 
@@ -160,7 +161,7 @@ onMounted(() => {
     }
   }
   if (props.defaultTime) {
-    const timeFromInput = props.defaultTime.split(':');
+    const timeFromInput = props.defaultTime.split('.');
     const twelveTime =
       convertMilitaryTimeToTwelveHourTime(timeFromInput);
     Object.keys(dateTimeInput.time).forEach(
@@ -383,7 +384,6 @@ function convertMilitaryTimeToTwelveHourTime(
   militaryTime.push(hour >= 12 ? 'PM' : 'AM');
   militaryTime[0] =
     hour > 12 ? String(hour - 12) : String(hour);
-
   return militaryTime;
 }
 

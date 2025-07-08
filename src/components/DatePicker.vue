@@ -2,20 +2,17 @@
   <v-container :fluid="true" class="pa-0">
     <v-card
       :variant="props.variantType"
-      :width="props.fullWidth ? '100%' : props.width"
+      :width="props.width"
       :color="props.color"
       :height="props.height"
       :position="props.position"
       :rounded="props.borderRadius"
       :elevation="props.elevationNumber"
       style="display: flex; align-items: center"
-      class="pa-2 pb-0"
+      class="pa-2"
     >
-      <v-row>
-        <v-col
-          cols="auto"
-          class="pa-2 d-flex flex-row pt-0 pr-0"
-        >
+      <div class="d-flex">
+        <v-col class="pa-0 d-flex flex-row">
           <v-col cols="3" class="pa-0"
             ><v-text-field
               v-model="dateTimeInput.date.day"
@@ -51,15 +48,15 @@
             ></v-text-field
           ></v-col>
         </v-col>
-      </v-row>
-      <div>
+      </div>
+      <v-row justify="end" class="mr-1">
         <v-icon
           v-if="props.clearable && !disabled && !readonly"
           icon="$clearable"
-          class="pt-0 pb-2 pr-2"
+          size="xl"
           @click="handleClickClearable()"
         ></v-icon>
-      </div>
+      </v-row>
     </v-card>
   </v-container>
 </template>

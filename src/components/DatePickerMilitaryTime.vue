@@ -1,60 +1,54 @@
 <template>
-  <v-container :fluid="true" class="pa-0">
-    <v-card
-      :variant="props.variantType"
-      :width="props.fullWidth ? '100%' : props.width"
-      :color="props.color"
-      :height="props.height"
-      :position="props.position"
-      :rounded="props.borderRadius"
-      :elevation="props.elevationNumber"
-      style="display: flex; align-items: center"
-      class="pa-2 pb-0"
-    >
-      <v-row>
-        <v-col
-          :cols="props.fullWidth ? 'auto' : '7'"
-          class="pa-2 d-flex flex-row pt-0 pr-0"
-        >
-          <v-col cols="3" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.day"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'day')"
-            >
-            </v-text-field></v-col
-          ><span class="size-text">/</span>
-          <v-col cols="3" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.month"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'month')"
-            ></v-text-field></v-col
-          ><span class="size-text">/</span>
-          <v-col cols="" class="pa-0"
-            ><v-text-field
-              v-model="dateTimeInput.date.year"
-              label=""
-              variant="plain"
-              hide-details
-              :disabled="props.disabled"
-              :readonly="props.readonly"
-              @input="setDate($event, 'year')"
-            ></v-text-field
-          ></v-col>
-        </v-col>
-        <v-col
-          :cols="props.fullWidth ? 'auto' : '4'"
-          class="pa-0 d-flex flex-row"
-        >
+  <v-card
+    :variant="props.variantType"
+    :width="props.width"
+    :color="props.color"
+    :height="props.height"
+    :position="props.position"
+    :rounded="props.borderRadius"
+    :elevation="props.elevationNumber"
+    style="display: flex; align-items: center"
+    class="px-2"
+  >
+    <div class="d-flex">
+      <v-col class="pa-0 d-flex flex-row">
+        <v-col cols="3" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.day"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'day')"
+          >
+          </v-text-field></v-col
+        ><span class="size-text">/</span>
+        <v-col cols="3" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.month"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'month')"
+          ></v-text-field></v-col
+        ><span class="size-text">/</span>
+        <v-col cols="" class="pa-0"
+          ><v-text-field
+            v-model="dateTimeInput.date.year"
+            label=""
+            variant="plain"
+            hide-details
+            :disabled="props.disabled"
+            :readonly="props.readonly"
+            @input="setDate($event, 'year')"
+          ></v-text-field
+        ></v-col>
+      </v-col>
+      <v-col class="pa-0 d-flex flex-row">
+        <v-col class="pa-0 pl-2">
           <v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
@@ -62,7 +56,9 @@
             hide-details
             @input="setTime($event, 'hour')"
           ></v-text-field>
-          <span class="size-text">:</span>
+        </v-col>
+        <span class="size-text">:</span>
+        <v-col class="pa-0">
           <v-text-field
             v-model="dateTimeInput.time.minute"
             label=""
@@ -71,17 +67,17 @@
             @input="setTime($event, 'minute')"
           ></v-text-field>
         </v-col>
-      </v-row>
-      <div>
-        <v-icon
-          v-if="props.clearable && !disabled && !readonly"
-          icon="$clearable"
-          class="pt-0 pb-2 px-1"
-          @click="handleClickClearable()"
-        ></v-icon>
-      </div>
-    </v-card>
-  </v-container>
+      </v-col>
+    </div>
+    <v-row justify="end" class="mr-1">
+      <v-icon
+        v-if="props.clearable && !disabled && !readonly"
+        icon="$clearable"
+        size="xl"
+        @click="handleClickClearable()"
+      ></v-icon>
+    </v-row>
+  </v-card>
 </template>
 
 <script setup lang="ts">

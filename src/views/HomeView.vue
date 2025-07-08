@@ -39,6 +39,7 @@
           timeType="twelveHour"
           clearable
           default-date="2/3/1234"
+          default-time="17.40"
           minTime="8.30"
           maxTime="17.30"
         />
