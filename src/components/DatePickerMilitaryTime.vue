@@ -49,7 +49,7 @@
         ></v-col>
       </v-col>
       <v-col class="pa-0 d-flex flex-row">
-        <v-col cols="4" class="pa-0 pl-2">
+        <v-col cols="3" class="pa-0">
           <v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
@@ -60,7 +60,7 @@
           ></v-text-field>
         </v-col>
         <span class="size-text">:</span>
-        <v-col class="pa-0">
+        <v-col class="pa-0 pl-2">
           <v-text-field
             v-model="dateTimeInput.time.minute"
             label=""
