@@ -8,6 +8,7 @@
     :rounded="props.borderRadius"
     :elevation="props.elevationNumber"
     style="display: flex; align-items: center"
+    min-width="280px"
     class="px-2"
   >
     <div class="d-flex">
@@ -48,7 +49,7 @@
         ></v-col>
       </v-col>
       <v-col class="pa-0 d-flex flex-row">
-        <v-col class="pa-0 pl-2"
+        <v-col cols="3" class="pa-0"
           ><v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
@@ -58,7 +59,7 @@
           ></v-text-field
         ></v-col>
         <span class="size-text">:</span>
-        <v-col class="pa-0"
+        <v-col cols="3" class="pa-0"
           ><v-text-field
             v-model="dateTimeInput.time.minute"
             label=""

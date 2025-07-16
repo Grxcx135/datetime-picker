@@ -9,6 +9,7 @@
       :rounded="props.borderRadius"
       :elevation="props.elevationNumber"
       style="display: flex; align-items: center"
+      min-width="200px"
       class="pa-2"
     >
       <div class="d-flex">

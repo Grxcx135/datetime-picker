@@ -20,7 +20,6 @@
         <DateTimePicker
           v-model:date-input="dateTimeMilitaryPicker"
           timeType="militaryTime"
-          width="250px"
           variantType="tonal"
           color="red"
           minDate="2/3/2532"
@@ -34,7 +33,7 @@
       </v-col>
     </v-row>
     <v-row>
-      <v-col cols="auto">
+      <v-col>
         <DateTimePicker
           v-model:date-input="dateTimeTwelvePicker"
           timeType="twelveHour"

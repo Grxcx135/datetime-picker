@@ -53,7 +53,6 @@
       v-else-if="props.timeType === 'twelveHour'"
       :variantType="props.variantType"
       :width="props.width"
-      :fullWidth="props.fullWidth"
       :defaultDate="props.defaultDate"
       :defaultTime="props.defaultTime"
       :clearable="props.clearable"
