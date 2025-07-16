@@ -20,11 +20,12 @@
         <DateTimePicker
           v-model:date-input="dateTimeMilitaryPicker"
           timeType="militaryTime"
+          width="250px"
           variantType="tonal"
           color="red"
           minDate="2/3/2532"
           maxDate="2/3/2533"
-          default-time="17.40"
+          default-date="5/4/2532"
           minTime="8.30"
           maxTime="17.30"
           clearable

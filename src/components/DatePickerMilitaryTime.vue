@@ -48,13 +48,14 @@
         ></v-col>
       </v-col>
       <v-col class="pa-0 d-flex flex-row">
-        <v-col class="pa-0 pl-2">
+        <v-col cols="4" class="pa-0 pl-2">
           <v-text-field
             v-model="dateTimeInput.time.hour"
             label=""
             variant="plain"
             hide-details
             @input="setTime($event, 'hour')"
+            @blur="checkMinAndMaxTime()"
           ></v-text-field>
         </v-col>
         <span class="size-text">:</span>
@@ -65,6 +66,7 @@
             variant="plain"
             hide-details
             @input="setTime($event, 'minute')"
+            @blur="checkMinAndMaxTime()"
           ></v-text-field>
         </v-col>
       </v-col>
@@ -96,8 +98,7 @@ import {
 import {
   isMoreThanMaximumTime,
   setDefaultByTimeUnit,
-  inputTimeByProp,
-  isLessThanMinTimeOrMoreThanMaxTime
+  inputTimeByProp
 } from '@/utils/timeFunction';
 import type { dateTimeProps } from './DateTimeProps';
 import { defaultDateTimeProps } from './DateTimeProps';
@@ -158,9 +159,7 @@ onMounted(() => {
       ) &&
       !isLessThanMinTimeOrMoreThanMaxTime(
         timeFromInput[0],
-        timeFromInput[1],
-        props.minTime,
-        props.maxTime
+        timeFromInput[1]
       )
     ) {
       Object.keys(dateTimeInput.time).forEach(
@@ -282,12 +281,13 @@ function setTime(
         setDefaultByTimeUnit(timeUnit);
     }
   }
+}
+
+function checkMinAndMaxTime() {
   if (
     isLessThanMinTimeOrMoreThanMaxTime(
       dateTimeInput.time.hour,
-      dateTimeInput.time.minute,
-      props.minTime,
-      props.maxTime
+      dateTimeInput.time.minute
     )
   ) {
     dateTimeInput.time.hour = 'HH';
@@ -350,6 +350,20 @@ function moreThanMaximumDate(
         ? '0' + Number(dateTimeInput.date.month)
         : dateTimeInput.date.month;
   }
+}
+
+function isLessThanMinTimeOrMoreThanMaxTime(
+  hour: string,
+  minute: string
+) {
+  if (hour === 'HH' || minute === 'mm') {
+    return false;
+  }
+  const inputTime = Number(hour) + Number(minute) * 0.01;
+  return props.maxTime
+    ? inputTime < Number(props.minTime) ||
+        inputTime > Number(props.maxTime)
+    : false;
 }
 </script>
 

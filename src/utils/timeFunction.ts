@@ -49,21 +49,3 @@ export function inputTimeByProp(
       : '0' + timeFromInput[index]
     : timeFromInput[index];
 }
-
-export function isLessThanMinTimeOrMoreThanMaxTime(
-  hour: string,
-  minute: string,
-  minTime: string,
-  maxTime: string
-) {
-  console.log('TODO : bug cal ไวเกิน');
-  if (hour === 'HH' || minute === 'mm') {
-    console.log('in if', hour, minute);
-    return false;
-  }
-  const inputTime = Number(hour) + Number(minute) * 0.01;
-  return maxTime
-    ? inputTime < Number(minTime) ||
-        inputTime > Number(maxTime)
-    : false;
-}
